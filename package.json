@@ -13,12 +13,20 @@
   "keywords": [
     "ng",
     "angular",
+    "front-end",
     "environment"
   ],
   "author": "phinney",
   "license": "ISC",
+  "bin": {
+    "nes": "bin/nes"
+  },
   "bugs": {
     "url": "https://github.com/phinney001/ng-environment-setup/issues"
   },
-  "homepage": "https://github.com/phinney001/ng-environment-setup#readme"
+  "homepage": "https://github.com/phinney001/ng-environment-setup#readme",
+  "dependencies": {
+    "ansi-colors": "^4.1.1",
+    "inquirer": "^7.1.0"
+  }
 }

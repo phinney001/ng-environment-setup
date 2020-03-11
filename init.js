@@ -1,5 +1,6 @@
 const request = require('request')
 const fs = require('fs')
+const { prompt } = require('inquirer')
 const { execSync } = require('child_process')
 const { red, yellow, green } = require('ansi-colors')
 
@@ -40,6 +41,15 @@ class AngularCli {
       matchList: [],
       importList: []
     }
+
+    // 命令问题列表
+    this.promptList = [
+      {
+        name: 'project-name',
+        type: 'input',
+        message: '请输入项目名称：'
+      }
+    ]
   }
 
   /**
@@ -888,27 +898,18 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
    * 安装环境
    */
   start() {
-    console.log(green('echarts installing. . .'))
-    this.execCommand('npm install echarts ngx-echarts --save', () => {
-      console.log(green('echarts installation completed.'))
-      // this.webpackExtraRewriteList.matchList.push({
-      //   match: 'cacheGroups: {|}',
-      //   item: `echarts: {
-      //     name: 'echarts',
-      //     test: /[\\\\/]node_modules[\\\\/]echarts/,
-      //     priority: 20,
-      //     chunks: 'all'
-      //   }`,
-      //   space: 6
-      // })
-      this.sharedModuleRewriteList.importList.push(`import { NgxEchartsModule } from 'ngx-echarts'`)
-      this.sharedModuleRewriteList.matchList.push({
-        match: 'const THIRDMODULES = [|]',
-        item: `NgxEchartsModule`
+    prompt(this.promptList).then(answers => {
+      const projectName = answers['project-name']
+      console.log(green('angular cli running. . .'))
+      this.execCommand(`ng new ${projectName} --style=scss --routing`, () => {
+        console.log(green('angular cli completed.'))
+        this.execCommand(`cd ${projectName}`, () => {
+          this.init()
+        })
       })
     })
   }
 }
 
 const AC = new AngularCli()
-AC.init()
+AC.start()
