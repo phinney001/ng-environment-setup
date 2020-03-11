@@ -1,6 +1,6 @@
 {
   "name": "ng-environment-setup",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "ng environment setup",
   "main": "init.js",
   "scripts": {
@@ -27,6 +27,7 @@
   "homepage": "https://github.com/phinney001/ng-environment-setup#readme",
   "dependencies": {
     "ansi-colors": "^4.1.1",
-    "inquirer": "^7.1.0"
+    "inquirer": "^7.1.0",
+    "request": "^2.88.2"
   }
 }

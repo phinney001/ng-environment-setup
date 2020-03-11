@@ -50,6 +50,9 @@ class AngularCli {
         message: '请输入项目名称：'
       }
     ]
+
+    // 项目路径
+    this.projectPath = __dirname
   }
 
   /**
@@ -67,7 +70,7 @@ class AngularCli {
    * @param {function} callback 回调函数
    */
   execCommand(command, callback) {
-    const stdout = execSync(command)
+    const stdout = execSync(command, { cwd: this.projectPath, encoding: 'utf8', stdio: 'inherit' })
     console.log(green(stdout))
     if (callback) {
       callback()
@@ -903,9 +906,8 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
       console.log(green('angular cli running. . .'))
       this.execCommand(`ng new ${projectName} --style=scss --routing`, () => {
         console.log(green('angular cli completed.'))
-        this.execCommand(`cd ${projectName}`, () => {
-          this.init()
-        })
+        this.projectPath = `${__dirname}/${projectName}`
+        this.init()
       })
     })
   }
