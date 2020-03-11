@@ -1,0 +1,56 @@
+/* 公共样式常量 */
+@import '../../../constants.scss';
+
+/* tab标签页 */
+$tabs: (
+  height: 56px,
+  background: #fff,
+  zIndex: 10
+);
+$tabs-item: (
+  size: 14px,
+  color: #666,
+  active-color: #333,
+  border-color: $base-color,
+  padding: 0 16px,
+  margin: 0 24px,
+  line-width: 3px,
+  animate-time: 0.3s
+);
+
+.page-tabs {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0;
+  height: map-get($tabs, height);
+  background: map-get($tabs, background);
+  .tab-item {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    padding: map-get($tabs-item, padding);
+    line-height: map-get($tabs, height);
+    font-size: map-get($tabs-item, size);
+    color: map-get($tabs-item, color);
+    margin: map-get($tabs-item, margin);
+    &:after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 0;
+      height: map-get($tabs-item, line-width);
+    }
+    &.active {
+      color: map-get($tabs-item, active-color);
+      &:after {
+        left: 0;
+        width: 100%;
+        background-color: map-get($tabs-item, border-color);
+        transition: all map-get($tabs-item, animate-time) linear;
+      }
+    }
+  }
+}

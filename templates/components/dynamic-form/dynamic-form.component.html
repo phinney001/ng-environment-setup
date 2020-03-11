@@ -1,0 +1,55 @@
+<form class="dynamic-form" nz-form [nzLayout]="layout" [formGroup]="form" (ngSubmit)="submit()">
+  <nz-form-item *ngFor="let field of fields" >
+    <nz-form-label *ngIf="field.type !== 'button'" [nzRequired]="field.required">{{field.label}}</nz-form-label>
+    <nz-form-control>
+      <!-- 输入框、密码输入框 -->
+      <ng-container *ngIf="['text', 'password'].includes(field.type) || !field.type">
+        <input [ngClass]="[field.class || 'md']" [formControlName]="field.name" [type]="field.type || 'text'" nz-input [placeholder]="field.placeholder" [readonly]="field.readonly">
+      </ng-container>
+      <!-- 多行输入文本框 -->
+      <ng-container *ngIf="field.type === 'textarea'">
+        <textarea [ngClass]="[field.class || 'md']" [formControlName]="field.name" nz-input [rows]="field.row" [placeholder]="field.placeholder"></textarea>
+      </ng-container>
+      <!-- 下拉选择框 -->
+      <ng-container *ngIf="field.type === 'select'">
+        <nz-select [ngClass]="[field.class || 'md']" [formControlName]="field.name" [nzPlaceHolder]="field.placeholder" [nzAllowClear]="field.allowClear" [nzDisabled]="field.disabled">
+          <nz-option *ngFor="let op of field.map" [nzLabel]="op.label" [nzValue]="op.value" [nzDisabled]="op.disabled"></nz-option>
+        </nz-select>
+      </ng-container>
+      <!-- 单选框 -->
+      <ng-container *ngIf="field.type === 'radio'">
+        <nz-radio-group [ngClass]="[field.class || '']" [formControlName]="field.name" [nzDisabled]="field.disabled">
+          <label *ngFor="let op of field.map" nz-radio-button [nzValue]="op.value">{{op.label}}</label>
+        </nz-radio-group>
+      </ng-container>
+      <!-- 多选框 -->
+      <ng-container *ngIf="field.type === 'checkbox'">
+        <nz-checkbox-group [ngClass]="[field.class || '']" [formControlName]="field.name" [nzDisabled]="field.disabled"></nz-checkbox-group>
+      </ng-container>
+      <!-- 日期选择框-天 -->
+      <ng-container *ngIf="field.type === 'date'">
+        <nz-date-picker [ngClass]="[field.class || 'md']" [formControlName]="field.name" [nzPlaceHolder]="field.placeholder" [nzAllowClear]="field.allowClear" [nzDisabled]="field.disabled"></nz-date-picker>
+      </ng-container>
+      <!-- 日期选择框-月 -->
+      <ng-container *ngIf="field.type === 'month'">
+        <nz-month-picker [ngClass]="[field.class || 'md']" [formControlName]="field.name" [nzPlaceHolder]="field.placeholder" [nzAllowClear]="field.allowClear" [nzDisabled]="field.disabled"></nz-month-picker>
+      </ng-container>
+      <!-- 日期选择框-年 -->
+      <ng-container *ngIf="field.type === 'year'">
+        <nz-year-picker [ngClass]="[field.class || 'md']" [formControlName]="field.name" [nzPlaceHolder]="field.placeholder" [nzAllowClear]="field.allowClear" [nzDisabled]="field.disabled"></nz-year-picker>
+      </ng-container>
+      <!-- 日期选择框-星期 -->
+      <ng-container *ngIf="field.type === 'week'">
+        <nz-week-picker [ngClass]="[field.class || 'md']" [formControlName]="field.name" [nzPlaceHolder]="field.placeholder" [nzAllowClear]="field.allowClear" [nzDisabled]="field.disabled"></nz-week-picker>
+      </ng-container>
+      <!-- 日期选择框-范围 -->
+      <ng-container *ngIf="field.type === 'range'">
+        <nz-range-picker [ngClass]="[field.class || 'md']" [formControlName]="field.name" [nzPlaceHolder]="field.placeholder" [nzAllowClear]="field.allowClear" [nzDisabled]="field.disabled"></nz-range-picker>
+      </ng-container>
+      <!-- 按钮 -->
+      <ng-container *ngIf="field.type === 'button'">
+        <button nz-button [ngClass]="[field.class || '']" [nzType]="field.color" [disabled]="!form.valid" [nzGhost]="field.ghost">{{field.label}}</button>
+      </ng-container>
+    </nz-form-control>
+  </nz-form-item>
+</form>

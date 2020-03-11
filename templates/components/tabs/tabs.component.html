@@ -1,0 +1,3 @@
+<ul class="page-tabs">
+  <li class="tab-item" *ngFor="let tab of tabs" [class.active]="tabSelected === tab.value" (click)="tabChange(tab.value)">{{tab.label}}</li>
+</ul>

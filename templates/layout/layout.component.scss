@@ -1,0 +1,24 @@
+/* 公共样式常量 */
+@import '../../constants.scss';
+      
+/* 主要区域布局 */
+$main: (
+  padding: 24px,
+  min-width: 1200px,
+  backgroud: $base-backgourd-color
+);
+
+:host main {
+  position: relative;
+  min-height: 100%;
+  min-width: map-get($main, min-width);
+  padding-top: map-get($main, padding) + $header-height + $breadcrumb-height;
+  padding-left: map-get($main, padding) + $sidebar-width;
+  padding-right: map-get($main, padding);
+  padding-bottom: $footer-height;
+  background: map-get($main, backgroud);
+  &.collapsed {
+    padding-left: map-get($main, padding) + $sidebar-collapsed-width;
+    transition: all .3s linear;
+  }
+}

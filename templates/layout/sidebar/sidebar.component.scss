@@ -1,0 +1,125 @@
+/* 公共样式常量 */
+@import '../../../constants.scss';
+
+/* 侧边栏 */
+$sidebar: (
+  background: $sidebar-background,
+  width: $sidebar-width,
+  zIndex: $sidebar-zIndex,
+  margin: 0 0 10px 0,
+  box-shadow: 2px 0px 6px 2px rgba(0, 21, 41, 0.06)
+);
+$sidebar-collapsed: (
+  width: $sidebar-collapsed-width
+);
+/* 菜单 */
+$menu: (
+  background: $sidebar-background
+);
+/* 菜单项 */
+$menu-item: (
+  miniWidth: 80px,
+  height: 48px,
+  color: $sidebar-color,
+  background: $sidebar-background,
+  actived-background: $sidebar-actived-background,
+  actived-color: $base-color,
+  actived-border-color: $base-color,
+  actived-border-width: 6px
+);
+/* 子菜单项 */
+$submenu: (
+  height: 48px,
+  color: $sidebar-color,
+  background: $sidebar-background,
+  actived-background: $sidebar-background,
+  actived-color: $base-color
+);
+
+#page-sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-top: $header-height;
+  width: map-get($sidebar, width);
+  background: map-get($sidebar, background);
+  margin: map-get($sidebar, margin);
+  z-index: map-get($sidebar, zIndex);
+  box-shadow: map-get($sidebar, box-shadow);
+  .page-menu {
+    background: map-get($menu, background);
+    border: none;
+    .page-menu-item {
+      color: map-get($menu-item, color);
+      background: map-get($menu-item, background);
+      height: map-get($menu-item, height);
+      line-height: map-get($menu-item, height);
+      &.ant-menu-item-selected {
+        color: map-get($menu-item, actived-color);
+        background: map-get($menu-item, actived-background);
+      }
+      &:after {
+        right: auto;
+        left: 0;
+        border-color: map-get($menu-item, actived-border-color);
+        border-width: map-get($menu-item, actived-border-width);
+      }
+      &:hover, &:focus {
+        outline: none;
+        color: map-get($menu-item, actived-color);
+      }
+    }
+  }
+  &.collapsed {
+    width: map-get($map: $sidebar-collapsed, $key: width);
+    transition: all .2s ease;
+  }
+}
+
+::ng-deep {
+  #page-sidebar {
+    .submenu-selected {
+      color: map-get($submenu, actived-color) !important;
+      .ant-menu-submenu-arrow {
+        &:before, &:after {
+          background: map-get($submenu, actived-color) !important;
+        }
+      }
+    }
+    .page-submenu {
+      background: map-get($submenu, background);
+      color: map-get($submenu, color);
+      > .ant-menu {
+        background: map-get($menu-item, background)
+      }
+      &[selected=true] {
+        @extend .submenu-selected
+      }
+      &:focus {
+        outline: none;
+        color: map-get($submenu, actived-color);
+      }
+      .ant-menu-submenu-title {
+        height: map-get($submenu, height);
+        line-height: map-get($submenu, height);
+        .ant-menu-submenu-arrow {
+          &:before, &:after {
+            background: map-get($submenu, color);
+          }
+        }
+        &:active {
+          background: map-get($menu, background)
+        }
+        &:hover {
+          @extend .submenu-selected
+        }
+      }
+    }
+  }
+  .ant-menu-submenu-popup .page-menu-item {
+    outline: none;
+  }
+}

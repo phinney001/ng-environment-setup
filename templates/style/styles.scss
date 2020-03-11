@@ -1,0 +1,458 @@
+/* 公共样式常量 */
+@import './constants.scss';
+
+/* 滚动条样式常量 */
+$scrollbar: (
+  width: 8px,
+  height: 5px,
+  radius: 5px,
+  color: #CCCCCC,
+  background: #EEEEEE,
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2)
+);
+
+/* margin & padding样式常量 */
+$margin: (
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0
+);
+$padding: (
+  top: 0,
+  bottom: 0,
+  left: 0,
+  right: 0
+);
+
+/* 颜色样式常量 */
+$colors: (
+  -green: $base-color,
+  -yellow: #FA8E01,
+  -blue: #157FFF,
+  -red: #FF6A6A,
+  -pink: (255, 106, 106, 0.05)
+);
+
+/* 表单元素长度样式常量 */
+$form: (
+  lg: 272px,
+  md: 242px,
+  sm: 120px,
+  xs: 80px
+);
+
+/* 卡片样式常量 */
+$card: (
+  head-padding: 0 24px,
+  head-border-color: $base-border-color,
+  title-color: #333,
+  title-size: 16px,
+  title-weight: 500,
+  title-height: 55px,
+  body-padding: 21px 32px,
+);
+
+/* 表格样式常量 */
+$table: (
+  border-color: $base-border-color,
+  border-radius: 3px 3px 0 0,
+  th-backgroud: #F8F7FC,
+  th-height: 54px,
+  th-color: #333,
+  th-align: center,
+  th-weight: 500,
+  tb-backgroud: #fff,
+  tb-height: 54px,
+  tb-color: #333,
+  tb-align: center,
+  hover-tb-backgroud: #F2FBFA
+);
+
+/* 翻页组件样式常量 */
+$pagination: (
+  margin: 20px 0 0,
+  color: rgba(0, 0, 0, 0.65),
+  border-color: #d9d9d9,
+  border-radius: 4px,
+  hover-color: $base-color,
+  active-color: #fff,
+  active-border-color: $base-color,
+  active-background: $base-color,
+  disabled-border-color: #d9d9d9,
+  disabled-color: rgba(0, 0, 0, 0.25)
+);
+
+/* 图表tooltip样式常量 */
+/* 行 */
+$chart-row: (
+  height: 22px,
+  margin: 0 0 4px 0
+);
+/* 圆形 */
+$chart-circle: (
+  width: 6px,
+  margin: 0 6px 2px 0,
+  background: #fff
+);
+/* 正方形 */
+$chart-square: (
+  width: 6px,
+  margin: 0 5px 2px 0,
+  background: #fff
+);
+/* 矩形 */
+$chart-rect: (
+  top: 3px,
+  width: 10px,
+  height: 16px,
+  margin: 2px 5px 0 2px,
+  background: #fff
+);
+/* 折线 */
+$chart-solid: (
+  width: 10px,
+  line-width: 8px,
+  line-height: 2px,
+  margin: 2px 12px 0 6px,
+  background: #fff
+);
+/* 虚线 */
+$chart-dashed: (
+  width: 10px,
+  line-width: 8px,
+  line-height: 2px,
+  margin: 2px 14px 0 4px,
+  background: #fff
+);
+
+/* 页面主要区域样式常量 */
+$page-main: (
+  padding: 32px,
+  background: #fff,
+  size: 14px,
+  color: rgba(0, 0, 0, 0.65)
+);
+
+/* 重置样式表 */
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+body, ul, li, h1, h2, h3, h4, h5, h6, form, input, button, textarea, p, th, td {
+  margin: 0;
+  padding: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  font-size: 100%;
+}
+ul, li {
+  list-style: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* 滚动条样式 */
+*::-webkit-scrollbar {
+  opacity: 0;
+  width: map-get($scrollbar, width);
+  height: map-get($scrollbar, height);
+  background: map-get($scrollbar, background);
+  border-radius: map-get($scrollbar, radius);
+}
+*::-webkit-scrollbar-thumb {
+  background-color: map-get($scrollbar, color);
+  border-radius: map-get($scrollbar, radius);
+}
+*::-webkit-scrollbar-track {
+  box-shadow: map-get($scrollbar, box-shadow);
+  border-radius: map-get($scrollbar, radius);
+}
+
+/* margin & padding样式 */
+@function firstLetter($letter) {
+  @if $letter=='top' {
+    @return 't';
+  }
+  @else if $letter=='bottom' {
+    @return 'b';
+  }
+  @else if $letter=='left' {
+    @return 'l';
+  }
+  @else if $letter=='right' {
+    @return 'r';
+  }
+  @else {
+    @return '';
+  }
+}
+@each $key, $value in $margin {
+  @for $i from 1 through length($value) {
+    .mg-#{firstLetter($key)}#{nth($value, $i)} {
+      margin-#{$key}: nth($value, $i) + px !important;
+    }
+  }
+}
+@each $key, $value in $padding {
+  @for $i from 1 through length($value) {
+    .pd-#{firstLetter($key)}#{nth($value, $i)} {
+      margin-#{$key}: nth($value, $i) + px !important;
+    }
+  }
+}
+
+/* 颜色样式 */
+@each $key, $value in $colors {
+  .color#{$key} {
+    color: $value !important;
+  }
+  .bg#{$key} {
+    background: $value !important;
+  }
+  .border#{$key} {
+    border-color: $value !important;
+  }
+}
+
+/* 表单元素长度样式 */
+input, select, textarea, nz-select, nz-input-number, nz-input-group, nz-date-picker, nz-month-picker, nz-year-picker, nz-week-picker, nz-range-picker {
+  @each $key, $value in $form {
+    &.#{$key}, &.#{$key} .ant-input {
+      width: $value !important;
+    }
+  }
+}
+
+/* 卡片样式 */
+nz-card {
+  .ant-card-head {
+    border-color: map-get($card, head-border-color);
+    padding: map-get($card, head-padding);
+  }
+  .ant-card-head-title {
+    color: map-get($card, title-color);
+    font-size: map-get($card, title-size);
+    font-weight: map-get($card, title-weight);
+    height: map-get($card, title-height);
+  }
+  .ant-card-body {
+    padding: map-get($card, body-padding);
+  }
+}
+
+/* 表格样式 */
+.page-table {
+  .ant-spin-container {
+    .ant-table-small {
+      border: none;
+      border-bottom: 1px solid map-get($table, border-color);
+      > .ant-table-content > .ant-table-body {
+        margin: 0;
+      }
+    }
+    .ant-table table {
+      border-radius: map-get($table, border-radius);
+    }
+    .ant-table-tbody > tr {
+      > .no-shadow {
+        box-shadow: none;
+      }
+    }
+    .ant-table-thead>tr>th {
+      color: map-get($table, th-color);
+      height: map-get($table, th-height);
+      text-align: map-get($table, th-align);
+      font-weight: map-get($table, th-weight);
+      background: map-get($table, th-backgroud) !important;
+      border-color: map-get($table, border-color);
+    }
+    .ant-table-tbody>tr>td {
+      color: map-get($table, tb-color);
+      height: map-get($table, tb-height);
+      text-align: map-get($table, tb-align);
+      background: map-get($table, tb-backgroud) !important;
+      border-color: map-get($table, border-color);
+    }
+    .ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
+      background: map-get($table, hover-tb-backgroud) !important;
+    }
+    .ant-table-placeholder {
+      border: 1px solid map-get($table, border-color);
+      color: map-get($table, tb-color);
+      background: map-get($table, tb-backgroud);
+    }
+  }
+}
+
+/* 翻页组件样式 */
+nz-pagination {
+  .ant-table-pagination.ant-pagination {
+    margin: map-get($pagination, margin);
+  }
+  .ant-pagination-options-size-changer.ant-select {
+    margin-right: 16px;
+    .ant-select-selection {
+      border-radius: 2px;
+    }
+  }
+  .ant-pagination-options-quick-jumper input {
+    border-radius: 2px;
+  }
+  .ant-pagination-item {
+    border-radius: map-get($pagination, border-radius);
+    border-color: map-get($pagination, border-color);
+    a {
+      color: map-get($pagination, color);
+    }
+    &:hover, &:focus {
+      border-color: map-get($pagination, active-border-color);
+      a {
+        color: map-get($pagination, hover-color);
+      }
+    }
+    &.ant-pagination-item-active {
+      border-color: map-get($pagination, active-border-color);
+      background: map-get($pagination, active-background);
+      a {
+        color: map-get($pagination, active-color);
+      }
+    }
+  }
+  .ant-pagination-prev, .ant-pagination-next {
+    border-radius: map-get($pagination, border-radius);
+    .ant-pagination-item-link {
+      border-color: map-get($pagination, border-color);
+      color: map-get($pagination, color);
+    }
+    &:hover, &:focus {
+      .ant-pagination-item-link {
+        border-color: map-get($pagination, active-border-color);
+        i {
+          color: map-get($pagination, hover-color);
+        }
+      }
+    }
+    &.ant-pagination-disabled {
+      .ant-pagination-item-link {
+        border-color: map-get($pagination, disabled-border-color);
+        i {
+          color: map-get($pagination, disabled-color);
+        }
+      }
+    }
+  }
+}
+
+/* 图表tooltip样式 */
+/* 行 */
+.chart-row {
+  height: map-get($chart-row, height);
+  line-height: map-get($chart-row, height);
+  &:not(:last-child) {
+    margin: map-get($chart-row, margin);
+  }
+}
+/* 圆形 */
+.chart-circle {
+  display: inline-block;
+  border-radius: 50%;
+  width: map-get($chart-circle, width);
+  height: map-get($chart-circle, width);
+  margin: map-get($chart-circle, margin);
+  background: map-get($chart-circle, background);
+}
+/* 正方形 */
+.chart-square {
+  display: inline-block;
+  width: map-get($chart-square, width);
+  height: map-get($chart-square, width);
+  margin: map-get($chart-square, margin);
+  background: map-get($chart-square, background);
+}
+/* 矩形 */
+.chart-rect {
+  position: relative;
+  display: inline-block;
+  top: map-get($chart-rect, top);
+  width: map-get($chart-rect, width);
+  height: map-get($chart-rect, height);
+  margin: map-get($chart-rect, margin);
+  background: map-get($chart-rect, background);
+}
+/* 折线 */
+.chart-solid {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  width: map-get($chart-solid, width);
+  height: map-get($chart-solid, width);
+  margin: map-get($chart-solid, margin);
+  background: map-get($chart-solid, background);
+  &:after {
+    content: '';
+    position: absolute;
+    top: map-get($chart-solid, line-width) / 2;
+    right: - map-get($chart-solid, line-width);
+    width: map-get($chart-solid, line-width);
+    height: map-get($chart-solid, line-height);
+    background: inherit;
+  }
+  &:before {
+    content: '';
+    position: absolute;
+    top: map-get($chart-solid, line-width) / 2;
+    left: - map-get($chart-solid, line-width);
+    width: map-get($chart-solid, line-width);
+    height: map-get($chart-solid, line-height);
+    background: inherit;
+  }
+}
+/* 虚线 */
+.chart-dashed {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  width: map-get($chart-dashed, width);
+  height: map-get($chart-dashed, width);
+  background: map-get($chart-dashed, background);
+  margin: map-get($chart-dashed, margin);
+  &:after {
+    content: '';
+    position: absolute;
+    background: inherit;
+    top: map-get($chart-dashed, line-width) / 2;
+    right: - map-get($chart-dashed, line-width) - map-get($chart-dashed, line-height);
+    width: map-get($chart-dashed, line-width);
+    height: map-get($chart-dashed, line-height);
+  }
+  &:before {
+    content: '';
+    position: absolute;
+    background: inherit;
+    top: map-get($chart-dashed, line-width) / 2;
+    left: - map-get($chart-dashed, line-width) - map-get($chart-dashed, line-height);
+    width: map-get($chart-dashed, line-width);
+    height: map-get($chart-dashed, line-height);
+  }
+}
+
+/* 页面主要区域样式 */
+.page-main {
+  padding: map-get($page-main, padding);
+  background: map-get($page-main, background);
+  font-size: map-get($page-main, size);
+  color: map-get($page-main, color);
+}
+
+/* 删除部分标签可选中状态 */
+a, .ant-checkbox-wrapper, .ant-dropdown-trigger, .ant-menu-item, .ant-menu-submenu-title {
+  user-select: none;
+}
+
+/* link类按钮边距调整 */
+button.ant-btn-link {
+  padding: 0 6px;
+}

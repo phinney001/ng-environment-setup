@@ -1,0 +1,24 @@
+{
+  "name": "ng-environment-setup",
+  "version": "1.0.0",
+  "description": "ng environment setup",
+  "main": "init.js",
+  "scripts": {
+    "test": "node init"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phinney001/ng-environment-setup.git"
+  },
+  "keywords": [
+    "ng",
+    "angular",
+    "environment"
+  ],
+  "author": "phinney",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phinney001/ng-environment-setup/issues"
+  },
+  "homepage": "https://github.com/phinney001/ng-environment-setup#readme"
+}

@@ -1,0 +1,70 @@
+/* 公共样式常量 */
+@import '../../../constants.scss';
+
+/* 面包屑 */
+$breadcrumb: (
+  height: $breadcrumb-height,
+  padding: 0 30px 0 0,
+  background: #fff,
+  zIndex: $breadcrumb-zIndex,
+  box-shadow: 2px 0px 6px 2px rgba(0, 21, 41, 0.06)
+);
+/* 菜单收缩图标 */
+$breadcrumb-collapsed: (
+  size: 20px,
+  color: rgba(0, 0, 0, 0.65),
+  padding: 0 24px,
+  margin: 0 4px 0 0
+);
+/* 消息图标 */
+$breadcrumb-badge: (
+  size: 12px,
+  color: #333
+);
+
+#page-breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  width: calc(100% - #{$sidebar-width});
+  min-width: $header-min-width - $sidebar-width;
+  left: $sidebar-width;
+  top: $header-height;
+  height: map-get($breadcrumb, height);
+  padding: map-get($breadcrumb, padding);
+  background: map-get($breadcrumb, background);
+  z-index: map-get($breadcrumb, zIndex);
+  box-shadow: map-get($breadcrumb, box-shadow);
+  .breadcrumb-left, .breadcrumb-right {
+    display: flex;
+    align-items: center;
+  }
+  .breadcrumb-collapsed {
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    line-height: map-get($breadcrumb, height);
+    color: map-get($breadcrumb-collapsed, color);
+    padding: map-get($breadcrumb-collapsed, padding);
+    margin: map-get($breadcrumb-collapsed, margin);
+    i {
+      font-size: map-get($breadcrumb-collapsed, size);
+    }
+  }
+  .breadcrumb-badge {
+    font-size: map-get($breadcrumb-badge, size);
+    color: map-get($breadcrumb-badge, color);
+  }
+}
+
+::ng-deep {
+  .collapsed {
+    #page-breadcrumb {
+      width: calc(100% - #{$sidebar-collapsed-width});
+      min-width: $header-min-width - $sidebar-collapsed-width;
+      left: $sidebar-collapsed-width;
+      transition: all .2s ease;
+    }
+  }
+}

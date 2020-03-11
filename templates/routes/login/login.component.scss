@@ -1,0 +1,116 @@
+/* 公共样式常量 */
+@import '../../../constants.scss';
+
+/* 登录布局 */
+$login: (
+  background: #0f1b33 url(/assets/img/login_bg.png) no-repeat
+);
+/* 表单 */
+$login-form: (
+  width: 360px,
+  padding: 20px 24px,
+  background: rgba(34, 38, 62, 0.7),
+  radius: 4px
+);
+/* 表单标题 */
+$login-form-title: (
+  size: 18px,
+  spacing: 10px,
+  color: #fff,
+  weight: 500
+);
+/* 输入框 */
+$login-form-input: (
+  color: #333,
+  background: #fff,
+  border-color: #fff,
+  height: 40px
+);
+/* 记住我 */
+$login-form-remember: (
+  color: #fff
+);
+/* 忘记密码 */
+$login-form-forgot: (
+  color: #fff,
+  hover-color: $base-color
+);
+/* 登录按钮 */
+$login-form-button: (
+  height: 40px
+);
+/* 去注册 */
+$login-form-register: (
+  color: #fff,
+  hover-color: $base-color
+);
+/* 登录页脚 */
+$login-footer: (
+  color: #fff,
+  background: rgba(34, 38, 62, 0.5)
+);
+
+#page-login {
+  position: relative;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: map-get($login, background);
+  background-size: cover;
+  .login-form {
+    width: map-get($login-form, width);
+    padding: map-get($login-form, padding);
+    background: map-get($login-form, background);
+    border-radius: map-get($login-form, radius);
+    .ant-form-item:last-child {
+      margin-bottom: 0;
+    }
+    .login-form-title {
+      font-size: map-get($login-form-title, size);
+      letter-spacing: map-get($login-form-title, spacing);
+      color: map-get($login-form-title, color);
+      font-weight: map-get($login-form-title, weight);
+      text-align: center;
+    }
+    .login-form-input {
+      color: map-get($login-form-input, color);
+      height:map-get($login-form-input, height);
+      border-color: map-get($login-form-input, border-color);
+      background-color: map-get($login-form-input, background);
+    }
+    .login-form-remember {
+      color: map-get($login-form-remember, color);
+    }
+    .login-form-forgot {
+      float: right;
+      color: map-get($login-form-forgot, color);
+      &:hover {
+        color: map-get($login-form-forgot, hover-color);
+      }
+    }
+    .login-form-button {
+      width: 100%;
+      height: map-get($login-form-button, height);
+    }
+    .login-form-register {
+      float: right;
+      color: map-get($login-form-register, color);
+      &:hover {
+        color: map-get($login-form-register, hover-color);
+      }
+    }
+  }
+}
+
+::ng-deep {
+  #page-login {
+    #page-footer {
+      background: map-get($login-footer, background);
+      padding: 0;
+      span {
+        color: map-get($login-footer, color);
+      }
+    }
+  }
+}

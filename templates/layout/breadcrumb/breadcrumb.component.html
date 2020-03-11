@@ -1,0 +1,17 @@
+<div id="page-breadcrumb">
+  <div class="breadcrumb-left">
+    <div class="breadcrumb-collapsed" (click)="sbs.toggleCollapsed()" [title]="sbs.isCollapsed ? '展开菜单' : '收起菜单'">
+      <i nz-icon [nzType]="sbs.isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+    </div>
+    <ng-content select="[name=left]"></ng-content>
+  </div>
+  <div class="breadcrumb-right">
+    <ng-content select="[name=right]"></ng-content>
+    <div class="breadcrumb-badge">
+      <nz-badge [nzDot]="true">
+        <i nz-icon nzType="bell" nzTheme="outline"></i>
+      </nz-badge>
+      ({{user.badge}})
+    </div>
+  </div>
+</div>

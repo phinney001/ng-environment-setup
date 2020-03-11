@@ -1,0 +1,31 @@
+/* 公共样式常量 */
+@import '../../../constants.scss';
+
+/* 页脚 */
+$footer: (
+  height: $footer-height,
+  size: 12px,
+  color: #999,
+  space: 6px,
+  zIndex: $footer-zIndex
+);
+
+#page-footer {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: $sidebar-width;
+  height: map-get($footer, height);
+  z-index: map-get($footer, zIndex);
+  span {
+    font-size: map-get($footer, size);
+    color: map-get($footer, color);
+    &:not(:last-child) {
+      margin-right: map-get($footer, space);
+    }
+  }
+}

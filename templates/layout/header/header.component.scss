@@ -1,0 +1,77 @@
+/* 公共样式常量 */
+@import '../../../constants.scss';
+
+/* 页头 */
+$header: (
+  min-width: $header-min-width,
+  height: $header-height,
+  background: $header-backgroud,
+  padding: 0 32px,
+  box-shadow: 0px 2px 11px 0px rgba(0, 0, 0, 0.1),
+  zIndex: $header-zIndex
+);
+/* logo */
+$header-logo: (
+  width: 36px,
+  height: 36px,
+  background: url(/assets/img/logo.png) center no-repeat
+);
+/* 标题 */
+$header-title: (
+  margin: 0 0 0 10px,
+  size: 22px,
+  color: #fff
+);
+/* 用户 */
+$header-user: (
+  padding: 10px
+);
+/* 用户名 */
+$header-username: (
+  color: #fff,
+  padding: 0 0 0 10px,
+  min-width: 50px
+);
+
+#page-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: map-get($header, min-width);
+  height: map-get($header, height);
+  padding: map-get($header, padding);
+  background: map-get($header, background);
+  box-shadow: map-get($header, box-shadow);
+  z-index: map-get($header, zIndex);
+  .header-logo {
+    width: map-get($header-logo, width);
+    height: map-get($header-logo, height);
+    background: map-get($header-logo, background) no-repeat;
+    background-size: cover;
+    border-radius: 50%;
+  }
+  .header-title {
+    margin: map-get($header-title, margin);
+    font-size: map-get($header-title, size);
+    color: map-get($header-title, color);
+  }
+  .header-user {
+    cursor: pointer;
+    padding: map-get($header-user, padding);
+    .header-username {
+      text-align: center;
+      display: inline-block;
+      min-width: map-get($header-username, min-width);
+      color: map-get($header-username, color);
+      padding: map-get($header-username, padding);
+    }
+  }
+  .header-left, .header-right {
+    display: flex;
+    align-items: center;
+  }
+}

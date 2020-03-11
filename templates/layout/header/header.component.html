@@ -1,0 +1,17 @@
+<header id="page-header">
+  <div class="header-left">
+    <div class="header-logo"></div>
+    <h1 class="header-title">欢迎来到菲尼系统</h1>
+  </div>
+  <div class="header-right">
+    <div class="header-user" nz-dropdown [nzDropdownMenu]="menu" nzTrigger="click">
+      <nz-avatar nzIcon="user"></nz-avatar>
+      <h2 class="header-username">{{usr.userName}}</h2>
+    </div>
+    <nz-dropdown-menu #menu="nzDropdownMenu" class="header-dropdown">
+      <ul nz-menu class="header-dropdown-list">
+        <li nz-menu-item class="header-dropdown-item" (click)="logout()">退出登录</li>
+      </ul>
+    </nz-dropdown-menu>
+  </div>
+</header>

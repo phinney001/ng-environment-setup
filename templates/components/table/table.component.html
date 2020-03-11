@@ -1,0 +1,17 @@
+<nz-table class="page-table" #nzTable [nzData]="tableData.data" [nzScroll]="tableData.scroll" nzSize="small" nzShowSizeChanger nzShowQuickJumper>
+  <thead>
+    <tr>
+      <th *ngFor="let c of tableData.columns" [nzWidth]="c.width" [nzLeft]="c.left" [nzRight]="c.right">{{c.label}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let item of nzTable.data">
+      <td *ngFor="let c of tableData.columns" [ngClass]="[c.class || '']" [nzLeft]="c.left" [nzRight]="c.right">
+        <ng-container *ngTemplateOutlet="c.template ? tdCustomTpl : tdTpl; context: { $implicit: item, column: c }"></ng-container>
+        <ng-template #tdTpl>
+          <span [innerHtml]="c.render ? sanitize.bypassSecurityTrustHtml(c.render(item)) : item[c.value]"></span>
+        </ng-template>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>

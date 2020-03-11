@@ -1,0 +1,24 @@
+<nav id="page-sidebar" [class.collapsed]="sbs.isCollapsed">
+  <ul class="page-menu" nz-menu nzMode="inline" [nzInlineCollapsed]="sbs.isCollapsed">
+    <ng-container *ngTemplateOutlet="menuTpl; context: { $implicit: sbs.menus }"></ng-container>
+    <ng-template #menuTpl let-menus>
+      <ng-container *ngFor="let menu of menus">
+        <li class="page-menu-item" *ngIf="!menu.children" nz-menu-item [nzPaddingLeft]="menu.level * 24" [nzSelected]="menu.selected" [routerLink]="menu.link">
+          <span title>
+            <i nz-icon [nzType]="menu.icon" *ngIf="menu.icon"></i>
+            <span>{{ menu.title }}</span>
+          </span>
+        </li>
+        <li class="page-submenu" *ngIf="menu.children" [attr.selected]="sbs.hasActivedChild(menu)" nz-submenu [nzPaddingLeft]="menu.level * 24" [nzOpen]="menu.open">
+          <span title>
+            <i nz-icon [nzType]="menu.icon" *ngIf="menu.icon"></i>
+            <span>{{ menu.title }}</span>
+          </span>
+          <ul>
+            <ng-container *ngTemplateOutlet="menuTpl; context: { $implicit: menu.children }"></ng-container>
+          </ul>
+        </li>
+      </ng-container>
+    </ng-template>
+  </ul>
+</nav>
