@@ -9,9 +9,9 @@
 + [Angular-Cli](https://github.com/angular/angular-cli)
 + [Node](https://nodejs.org/en/)
 + [ng-zorro-antd](https://ng.ant.design/docs/introduce/zh)
-+ [ngx-echarts](https://github.com/xieziyu/ngx-echarts)`
++ [ngx-echarts](https://github.com/xieziyu/ngx-echarts)
 
-# 依赖
+# 环境
   ```bash
   Angular-Cli (version >= 8.x)
   Node (version >= 10.x)
