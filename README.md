@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/phinney001/ng-environment-setup.svg?branch=master)][ci-url]
 
 # 简介
-`ng-environment-setup` 用于Angular项目自动化创建，依赖于
+`ng-environment-setup` 用于Angular项目自动化创建，依赖于:
 + [Angular-Cli](https://github.com/angular/angular-cli)
 + [Node](https://nodejs.org/en/)
 + [ng-zorro-antd](https://ng.ant.design/docs/introduce/zh)
