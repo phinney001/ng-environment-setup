@@ -184,9 +184,10 @@ class AngularCli {
    */
   downloadImage(linkPath, writePath) {
     const fileName = writePath.split('/').pop()
+    writePath = path.join(this.projectPath, writePath)
     console.log(green(`${fileName} downloading. . .`))
-    fs.mkdirSync(writePath.replace(`/${fileName}`, ''), { recursive: true })
-    const writeStream = fs.createWriteStream(path.join(this.projectPath, writePath))
+    fs.mkdirSync(writePath.replace(`${fileName}`, ''), { recursive: true })
+    const writeStream = fs.createWriteStream(writePath)
 
     const readStream = request(linkPath)
     readStream.pipe(writeStream)
@@ -215,19 +216,17 @@ class AngularCli {
    * @param isMove 是否删除旧目录文件
    */
   copyDir(oldPath, newPath, isMove) {
-    oldPath = path.join(__dirname, oldPath)
-    newPath = path.join(this.projectPath, oldPath)
-    const fileList = fs.readdirSync(oldPath)
+    const fileList = fs.readdirSync(path.join(__dirname, oldPath))
     fileList.forEach(filePath => {
       const oldFilePath = `${oldPath}/${filePath}`
       const newFilePath = `${newPath}/${filePath}`
-      fs.mkdirSync(newPath, { recursive: true })
+      fs.mkdirSync(path.join(this.projectPath, newPath), { recursive: true })
       if (['.html', '.scss', '.ts'].some(t => filePath.endsWith(t))) {
-        fs.copyFileSync(oldFilePath, newFilePath)
+        fs.copyFileSync(path.join(__dirname, oldFilePath), path.join(this.projectPath, newFilePath))
         if (isMove) {
-          fs.unlinkSync(oldFilePath)
-          if (!fs.readdirSync(oldPath).length) {
-            fs.rmdirSync(oldPath)
+          fs.unlinkSync(path.join(__dirname, oldFilePath))
+          if (!fs.readdirSyncpath.join(__dirname, (oldPath)).length) {
+            fs.rmdirSync(path.join(__dirname, oldPath))
           }
         }
       } else {
@@ -365,7 +364,6 @@ class AngularCli {
     const fileTemplatePath = './templates/layout'
     const filePath = './src/app/layout'
     this.copyDir(fileTemplatePath, filePath)
-
     this.downloadImage('https://s2.ax1x.com/2019/09/24/ukuYDg.png', './src/assets/img/logo.png')
     this.sharedModuleRewriteList.importList.push(`import { HeaderComponent } from '@app/layout/header/header.component'`)
     this.sharedModuleRewriteList.matchList.push({
