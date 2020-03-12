@@ -1,5 +1,6 @@
 const request = require('request')
 const fs = require('fs')
+const path = require('path')
 const { prompt } = require('inquirer')
 const { execSync } = require('child_process')
 const { red, yellow, green } = require('ansi-colors')
@@ -52,7 +53,7 @@ class AngularCli {
     ]
 
     // 项目路径
-    this.projectPath = __dirname
+    this.projectPath = process.cwd()
   }
 
   /**
@@ -107,6 +108,7 @@ class AngularCli {
    */
   rewriteFile(filePath, options = {}) {
     const fileName = filePath.split('/').pop()
+    filePath = path.join(this.projectPath, filePath)
     console.log(green(`${fileName} updating. . .`))
     let fileString = fs.readFileSync(filePath, 'utf-8')
     fileString = fileString.replace(new RegExp('\r\n', 'g'), '\n')
@@ -165,6 +167,7 @@ class AngularCli {
    */
   generateFile(filePath, fileString) {
     const fileName = filePath.split('/').pop()
+    filePath = path.join(this.projectPath, filePath)
     console.log(green(`${fileName} creating. . .`))
     if (fs.existsSync(filePath)) {
       return console.log(yellow(`${fileName} already exists.`))
@@ -183,7 +186,7 @@ class AngularCli {
     const fileName = writePath.split('/').pop()
     console.log(green(`${fileName} downloading. . .`))
     fs.mkdirSync(writePath.replace(`/${fileName}`, ''), { recursive: true })
-    const writeStream = fs.createWriteStream(writePath)
+    const writeStream = fs.createWriteStream(path.join(this.projectPath, writePath))
 
     const readStream = request(linkPath)
     readStream.pipe(writeStream)
@@ -202,7 +205,7 @@ class AngularCli {
    * @param {string} path 路径名称
    */
   getTemplate(path) {
-    return fs.readFileSync(`./templates${path}`, 'utf-8')
+    return fs.readFileSync(path.join(this.projectPath, `./templates${path}`), 'utf-8')
   }
 
   /**
@@ -212,10 +215,10 @@ class AngularCli {
    * @param isMove 是否删除旧目录文件
    */
   copyDir(oldPath, newPath, isMove) {
-    const fileList = fs.readdirSync(oldPath)
+    const fileList = fs.readdirSync(path.join(this.projectPath, oldPath))
     fileList.forEach(filePath => {
-      const oldFilePath = `${oldPath}/${filePath}`
-      const newFilePath = `${newPath}/${filePath}`
+      const oldFilePath = path.join(this.projectPath, `${oldPath}/${filePath}`)
+      const newFilePath = path.join(this.projectPath, `${newPath}/${filePath}`)
       fs.mkdirSync(newPath, { recursive: true })
       if (['.html', '.scss', '.ts'].some(t => filePath.endsWith(t))) {
         fs.copyFileSync(oldFilePath, newFilePath)
@@ -906,7 +909,7 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
       console.log(green('angular cli running. . .'))
       this.execCommand(`ng new ${projectName} --style=scss --routing`, () => {
         console.log(green('angular cli completed.'))
-        this.projectPath = `${__dirname}/${projectName}`
+        this.projectPath = `${process.cwd()}/${projectName}`
         this.init()
       })
     })

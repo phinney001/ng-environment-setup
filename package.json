@@ -1,6 +1,6 @@
 {
   "name": "ng-environment-setup",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "ng environment setup",
   "main": "init.js",
   "scripts": {
