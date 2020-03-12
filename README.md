@@ -1,8 +1,8 @@
 # ng-environment-setup
 <!-- Badges section here. -->
-[![npm](https://img.shields.io/npm/v/ng-environment-setup.svg)][npm-badge-url]
-[![npm](https://img.shields.io/npm/dm/ng-environment-setup.svg)][npm-badge-url]
-[![Build Status](https://travis-ci.org/phinney001/ng-environment-setup.svg?branch=master)][ci-url]
+[![npm](https://img.shields.io/npm/v/ng-environment-setup.svg)](https://www.npmjs.com/package/ng-environment-setup)
+[![npm](https://img.shields.io/npm/dm/ng-environment-setup.svg)](https://www.npmjs.com/package/ng-environment-setup)
+[![Build Status](https://travis-ci.org/phinney001/ng-environment-setup.svg?branch=master)](https://travis-ci.org/phinney001/ng-environment-setup)
 
 # 简介
 `ng-environment-setup` 用于Angular项目自动化创建，依赖于:
