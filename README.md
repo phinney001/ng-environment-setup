@@ -1,15 +1,20 @@
 # ng-environment-setup
+<!-- Badges section here. -->
 [![npm](https://img.shields.io/npm/v/ng-environment-setup.svg)][npm-badge-url]
 [![npm](https://img.shields.io/npm/dm/ng-environment-setup.svg)][npm-badge-url]
 [![Build Status](https://travis-ci.org/phinney001/ng-environment-setup.svg?branch=master)][ci-url]
 
 # 简介
-`ng-environment-setup` 用于Angular项目自动化创建，依赖于+ `Angular-Cli`、+ `[Node](https://nodejs.org/en/)`、+ `[ng-zorro-antd](https://ng.ant.design/docs/introduce/zh)`、+ `[ngx-echarts](https://github.com/xieziyu/ngx-echarts)`
+`ng-environment-setup` 用于Angular项目自动化创建，依赖于
++ [Angular-Cli](https://github.com/angular/angular-cli)
++ [Node](https://nodejs.org/en/)
++ [ng-zorro-antd](https://ng.ant.design/docs/introduce/zh)
++ [ngx-echarts](https://github.com/xieziyu/ngx-echarts)`
 
 # 依赖
   ```bash
-  Angular-Cli (ver >= 8.x)
-  Node (ver >= 10.x)
+  Angular-Cli (version >= 8.x)
+  Node (version >= 10.x)
   ```
 
 # 安装
