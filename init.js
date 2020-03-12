@@ -953,9 +953,6 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
    */
   start() {
     let projectName = Array.from(process.argv).slice(2).join(' ')
-    if (!projectName) {
-      projectName = process.env.PROJECT_NAME
-    }
     if (projectName) {
       this.next(projectName)
     } else {

@@ -1,10 +1,10 @@
 {
   "name": "ng-environment-setup",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "ng environment setup",
   "main": "init.js",
   "scripts": {
-    "test": "node init"
+    "test": "node init test"
   },
   "repository": {
     "type": "git",
