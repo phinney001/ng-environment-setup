@@ -740,6 +740,7 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
       './src/app/app-routing.module.ts'
     ]
     removeList.forEach(filePath => {
+      filePath = path.join(this.projectPath, filePath)
       if (fs.existsSync(filePath)) {
         fs.unlinkSync(filePath)
       }
