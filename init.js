@@ -172,7 +172,7 @@ class AngularCli {
     if (fs.existsSync(filePath)) {
       return console.log(yellow(`${fileName} already exists.`))
     }
-    fs.mkdirSync(filePath.replace(`/${fileName}`, ''), { recursive: true })
+    fs.mkdirSync(filePath.replace(`${fileName}`, ''), { recursive: true })
     fs.writeFileSync(filePath, fileString, 'utf-8')
     console.log(green(`${fileName} create completed.`))
   }
@@ -205,7 +205,7 @@ class AngularCli {
    * @param {string} filepath 路径名称
    */
   getTemplate(filepath) {
-    return fs.readFileSync(path.join(this.projectPath, `./templates${filepath}`), 'utf-8')
+    return fs.readFileSync(path.join(__dirname, `./templates${filepath}`), 'utf-8')
   }
 
   /**
@@ -215,10 +215,12 @@ class AngularCli {
    * @param isMove 是否删除旧目录文件
    */
   copyDir(oldPath, newPath, isMove) {
-    const fileList = fs.readdirSync(path.join(this.projectPath, oldPath))
+    oldPath = path.join(__dirname, oldPath)
+    newPath = path.join(this.projectPath, oldPath)
+    const fileList = fs.readdirSync(oldPath)
     fileList.forEach(filePath => {
-      const oldFilePath = path.join(this.projectPath, `${oldPath}/${filePath}`)
-      const newFilePath = path.join(this.projectPath, `${newPath}/${filePath}`)
+      const oldFilePath = `${oldPath}/${filePath}`
+      const newFilePath = `${newPath}/${filePath}`
       fs.mkdirSync(newPath, { recursive: true })
       if (['.html', '.scss', '.ts'].some(t => filePath.endsWith(t))) {
         fs.copyFileSync(oldFilePath, newFilePath)
@@ -906,12 +908,23 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
   start() {
     prompt(this.promptList).then(answers => {
       const projectName = answers['project-name']
-      console.log(green('angular cli running. . .'))
-      this.execCommand(`ng new ${projectName} --style=scss --routing`, () => {
-        console.log(green('angular cli completed.'))
-        this.projectPath = `${process.cwd()}/${projectName}`
+      const projectPath = `${process.cwd()}/${projectName}`
+      const historyPath = path.join(__dirname, 'history.json')
+      const history = require(historyPath)
+      if (fs.existsSync(projectPath) && history[projectName] === 1) {
+        console.log(yellow(`${projectPath} already exists.`))
+        this.projectPath = projectPath
         this.init()
-      })
+      } else {
+        console.log(green('angular cli running. . .'))
+        this.execCommand(`ng new ${projectName} --style=scss --routing`, () => {
+          console.log(green('angular cli completed.'))
+          history[projectName] = 1
+          fs.writeFileSync(historyPath, JSON.stringify(history), 'utf-8')
+          this.projectPath = projectPath
+          this.init()
+        })
+      }
     })
   }
 }
