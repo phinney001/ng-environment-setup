@@ -926,7 +926,7 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
   updateHistoryFile(projectName) {
     const history = this.getHistoryFile()
     history[projectName] = 1
-    fs.writeFileSync(historyPath, JSON.stringify(history), 'utf-8')
+    fs.writeFileSync(path.join(__dirname, 'history.json'), JSON.stringify(history), 'utf-8')
   }
 
   /**
