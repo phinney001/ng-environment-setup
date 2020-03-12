@@ -202,10 +202,10 @@ class AngularCli {
 
   /**
    * 获取模板
-   * @param {string} path 路径名称
+   * @param {string} filepath 路径名称
    */
-  getTemplate(path) {
-    return fs.readFileSync(path.join(this.projectPath, `./templates${path}`), 'utf-8')
+  getTemplate(filepath) {
+    return fs.readFileSync(path.join(this.projectPath, `./templates${filepath}`), 'utf-8')
   }
 
   /**
