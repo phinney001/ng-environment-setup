@@ -849,8 +849,10 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
 
   /**
    * 初始化
+   * @param projectPath 项目路径
    */
-  init() {
+  init(projectPath) {
+    this.projectPath = projectPath
     // 配置
     this.updatePackage()
     this.updateTsLint()
@@ -901,29 +903,67 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
   }
 
   /**
+   * 获取历史记录文件
+   */
+  getHistoryFile() {
+    const historyPath = path.join(__dirname, 'history.json')
+    return require(historyPath)
+  }
+
+  /**
+   * 该项目是否允许断点续传
+   * @param projectName 当前项目名称
+   */
+  isAllowBreakContinue(projectName) {
+    const history = this.getHistoryFile()
+    return history[projectName] === 1
+  }
+
+  /**
+   * 更新历史记录文件
+   * @param projectName 当前项目名称
+   */
+  updateHistoryFile(projectName) {
+    const history = this.getHistoryFile()
+    history[projectName] = 1
+    fs.writeFileSync(historyPath, JSON.stringify(history), 'utf-8')
+  }
+
+  /**
+   * 下一步
+   * @param projectName 当前项目名称
+   */
+  next(projectName) {
+    const projectPath = `${process.cwd()}/${projectName}`
+    if (fs.existsSync(projectPath) && this.isAllowBreakContinue(projectName)) {
+      console.log(yellow(`${projectPath} already exists.`))
+      this.init(projectPath)
+    } else {
+      console.log(green('angular cli running. . .'))
+      this.execCommand(`ng new ${projectName} --style=scss --routing`, () => {
+        console.log(green('angular cli completed.'))
+        this.updateHistoryFile(projectName)
+        this.init(projectPath)
+      })
+    }
+  }
+
+  /**
    * 安装环境
    */
   start() {
-    prompt(this.promptList).then(answers => {
-      const projectName = answers['project-name']
-      const projectPath = `${process.cwd()}/${projectName}`
-      const historyPath = path.join(__dirname, 'history.json')
-      const history = require(historyPath)
-      if (fs.existsSync(projectPath) && history[projectName] === 1) {
-        console.log(yellow(`${projectPath} already exists.`))
-        this.projectPath = projectPath
-        this.init()
-      } else {
-        console.log(green('angular cli running. . .'))
-        this.execCommand(`ng new ${projectName} --style=scss --routing`, () => {
-          console.log(green('angular cli completed.'))
-          history[projectName] = 1
-          fs.writeFileSync(historyPath, JSON.stringify(history), 'utf-8')
-          this.projectPath = projectPath
-          this.init()
-        })
-      }
-    })
+    let projectName = Array.from(process.argv).slice(2).join(' ')
+    if (!projectName) {
+      projectName = process.env.PROJECT_NAME
+    }
+    if (projectName) {
+      this.next(projectName)
+    } else {
+      prompt(this.promptList).then(answers => {
+        projectName = answers['project-name']
+        this.next(projectName)
+      })
+    }
   }
 }
 
