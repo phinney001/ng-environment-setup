@@ -1,0 +1,44 @@
+<div class="gantt-chart">
+  <nz-table
+    class="gantt-table"
+    [nzData]="data"
+    [nzScroll]="{x: heads.length * 80 + 'px'}"
+    [nzFrontPagination]="false"
+    [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th class="has-border-right"></th>
+        <ng-container *ngFor="let head of heads">
+          <th>{{head}}</th>
+        </ng-container>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let item of data">
+        <tr>
+          <td class="has-border-right">{{item.name}}</td>
+          <ng-container *ngFor="let data of item.list">
+            <ng-container *ngIf="tooltip">
+              <td [attr.colspan]="data.colspan" nz-tooltip nzTooltipPlacement="top" [nzTooltipTitle]="data.title">
+                <div
+                  *ngIf="data.title"
+                  class="has-event"
+                  [style.background]="bgList[data.title] || data.bg"
+                  [style.color]="colorList[data.title] || data.color || '#fff'"></div>
+              </td>
+            </ng-container>
+            <ng-container *ngIf="!tooltip">
+              <td [attr.colspan]="data.colspan">
+                <div
+                  *ngIf="data.title"
+                  class="has-event"
+                  [style.background]="bgList[data.title] || data.bg"
+                  [style.color]="colorList[data.title] || data.color || '#fff'">{{data.title}}</div>
+              </td>
+            </ng-container>
+          </ng-container>
+        </tr>
+      </ng-container>
+    </tbody>
+  </nz-table>
+</div>
