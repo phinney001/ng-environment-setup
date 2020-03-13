@@ -1,44 +1,38 @@
 <div class="gantt-chart">
-  <nz-table
-    class="gantt-table"
-    [nzData]="data"
-    [nzScroll]="{x: heads.length * 80 + 'px'}"
-    [nzFrontPagination]="false"
-    [nzShowPagination]="false">
-    <thead>
-      <tr>
-        <th class="has-border-right"></th>
-        <ng-container *ngFor="let head of heads">
-          <th>{{head}}</th>
-        </ng-container>
-      </tr>
-    </thead>
-    <tbody>
+  <div
+    class="gantt-table" [style.width]="width ? width + 'px' : '100%'">
+    <div class="table-head">
+      <div class="table-th has-border-right" [style.width]="cellWidth"></div>
+      <ng-container *ngFor="let head of heads">
+        <div class="table-th" [style.width]="cellWidth">{{head}}</div>
+      </ng-container>
+    </div>
+    <div class="table-body">
       <ng-container *ngFor="let item of data">
-        <tr>
-          <td class="has-border-right">{{item.name}}</td>
+        <div class="table-row">
+          <div class="table-td has-border-right" [style.width]="cellWidth">{{item.name}}</div>
           <ng-container *ngFor="let data of item.list">
             <ng-container *ngIf="tooltip">
-              <td [attr.colspan]="data.colspan" nz-tooltip nzTooltipPlacement="top" [nzTooltipTitle]="data.title">
+              <div class="table-td" [style.width]="data.width" [attr.colspan]="data.colspan" nz-tooltip nzTooltipPlacement="top" [nzTooltipTitle]="data.title">
                 <div
                   *ngIf="data.title"
                   class="has-event"
-                  [style.background]="bgList[data.title] || data.bg"
-                  [style.color]="colorList[data.title] || data.color || '#fff'"></div>
-              </td>
+                  [style.background]="data.bg"
+                  [style.color]="data.color || '#fff'"></div>
+              </div>
             </ng-container>
             <ng-container *ngIf="!tooltip">
-              <td [attr.colspan]="data.colspan">
+              <div class="table-td" [style.width]="data.width" [attr.colspan]="data.colspan">
                 <div
                   *ngIf="data.title"
                   class="has-event"
-                  [style.background]="bgList[data.title] || data.bg"
-                  [style.color]="colorList[data.title] || data.color || '#fff'">{{data.title}}</div>
-              </td>
+                  [style.background]="data.bg"
+                  [style.color]="data.color || '#fff'">{{data.title}}</div>
+              </div>
             </ng-container>
           </ng-container>
-        </tr>
+        </div>
       </ng-container>
-    </tbody>
-  </nz-table>
+    </div>
+  </div>
 </div>
