@@ -20,7 +20,7 @@ export class GaodeMapService {
    * @param cb 回调函数
    */
   load(cb?: () => void) {
-    const url = `https://webapi.amap.com/maps?v=1.4.15&key=${this.config.ak}&callback=onLoad`
+    const url = `https://webapi.amap.com/maps?v=1.4.15&key=${this.config.ak}&plugin=Map3D,AMap.DistrictSearch`
     const jsapi = document.createElement('script')
     jsapi.charset = 'utf-8'
     jsapi.src = url

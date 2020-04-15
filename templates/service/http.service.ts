@@ -63,7 +63,11 @@ export class HttpService {
     }
 
     // 请求url
-    paramsArray.push(environment.apiurl + url)
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      paramsArray.push(url)
+    } else {
+      paramsArray.push(environment.apiurl + url)
+    }
 
     // 当请求为post为put时第二个参数为body
     if (options.isPostOrPut) {

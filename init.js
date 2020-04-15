@@ -49,7 +49,28 @@ class AngularCli {
         name: 'project-name',
         type: 'input',
         message: '请输入项目名称：'
-      }
+      },
+      {
+        name: 'library-select',
+        type: 'list',
+        message: '请选择需要安装的第三方：',
+        choices: [
+          { name: '全部', value: 'both' },
+          { name: 'ngx-echarts', value: 'echart' },
+          { name: 'ng-zorro-antd', value: 'antd' }
+        ]
+      },
+      {
+        name: 'library-select',
+        type: 'list',
+        message: '请选择需要使用的服务：',
+        choices: [
+          { name: '全部', value: 'both' },
+          { name: '请求拦截器', value: 'ajax' },
+          { name: '词典服务', value: 'dict' },
+          { name: '路由守卫', value: 'guard' }
+        ]
+      },
     ]
 
     // 项目路径
@@ -495,8 +516,8 @@ class AngularCli {
     const filePath = './src/app/components/gaode-map'
     this.copyDir(fileTemplatePath, filePath)
 
-    this.appModuleRewriteList.importList.push(`import { GaodeMapModule } from '@app/components/gaode-map/gaode-map.module'`)
-    this.appModuleRewriteList.matchList.push({
+    this.sharedModuleRewriteList.importList.push(`import { GaodeMapModule } from '@app/components/gaode-map/gaode-map.module'`)
+    this.sharedModuleRewriteList.matchList.push({
       match: 'imports: [|]',
       item: `GaodeMapModule.forRoot({ ak: '491f5fbbd39fd1b918024f41e332c9a8' })`,
       space: 2
@@ -818,12 +839,15 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
 
   /**
    * 更新路由模块
+   * @param isNotFirst 是否是第一次更新
    */
-  updateRoutesModule() {
-    this.routesModuleRewriteList.matchList.push({
-      match: 'const routes: Routes = [|]',
-      item: `{ path: '**', redirectTo: 'home' }`
-    })
+  updateRoutesModule(isNotFirst) {
+    if (!isNotFirst) {
+      this.routesModuleRewriteList.matchList.push({
+        match: 'const routes: Routes = [|]',
+        item: `{ path: '**', redirectTo: 'home' }`
+      })
+    }
     this.rewriteFile('./src/app/routes/routes.module.ts', this.routesModuleRewriteList)
   }
 
@@ -955,7 +979,61 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
   start() {
     let projectName = Array.from(process.argv).slice(2).join(' ')
     if (projectName) {
-      this.next(projectName)
+      if (projectName === 'router') {
+        const routerPath = `${process.cwd()}/.router`
+        if (fs.existsSync(routerPath)) {
+          const routerList = require(routerPath)
+          const routeBasePath = '/src/app/routes'
+          const routesPath = `${process.cwd()}${routeBasePath}/routes.module.ts`
+          if (fs.existsSync(routesPath)) {
+            routerList.forEach(route => {
+              const currentFilePath = `${routeBasePath}${route.link}/`
+              const fileName = route.link.replace('/', '')
+              const upperFileName = fileName[0].toUpperCase() + fileName.substr(1)
+              this.generateFile(currentFilePath + fileName + '.component.html', `<!-- ${route.title} -->\n<div id="page-${fileName}">${upperFileName} Works!</div>`)
+              this.generateFile(currentFilePath + fileName + '.component.scss', `#page-${fileName} {\n}`)
+              this.generateFile(currentFilePath + fileName + '.component.ts', `import { Component, OnInit } from '@angular/core'
+
+@Component({
+  selector: 'app-${fileName}',
+  templateUrl: './${fileName}.component.html',
+  styleUrls: ['./${fileName}.component.scss']
+})
+export class ${upperFileName}Component implements OnInit {
+
+  constructor() { }
+
+  /**
+   * 初始化
+   */
+  ngOnInit() {
+  }
+
+}
+`)
+              this.routesModuleRewriteList.importList.push(`import { ${upperFileName}Component } from '@app/routes/${fileName}/${fileName}.component'`)
+              this.routesModuleRewriteList.matchList.push(
+                {
+                  match: 'declarations: [|]',
+                  item: `${upperFileName}Component`,
+                  space: 2
+                },
+                {
+                  match: 'const routes: Routes = [|]',
+                  item: `{ path: '${fileName}', component: ${upperFileName}Component, data: { title: '${route.title}' } }`
+                }
+              )
+              this.updateRoutesModule(true)
+            })
+          } else {
+            console.log(red('/src/app/routes/routes.module.ts must exists.'))
+          }
+        } else {
+          console.log(red('.router must exists.'))
+        }
+      } else {
+        this.next(projectName)
+      }
     } else {
       prompt(this.promptList).then(answers => {
         projectName = answers['project-name']

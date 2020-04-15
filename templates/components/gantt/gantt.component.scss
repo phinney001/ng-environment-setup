@@ -6,74 +6,74 @@ $table: (
   border-radius: 3px 3px 0 0,
   th-backgroud: #F8F6F9,
   th-color: #333,
+  th-align: center,
   th-height: 64px,
   th-padding: 4px 8px,
   th-weight: 400,
   tb-backgroud: #F8F6F9,
   tb-color: #333,
+  tb-align: center,
   tb-height: 64px,
-  tb-padding: 4px 0px,
+  tb-padding: 4px 8px,
   event-radius: 2px,
-  event-padding: 0 16px,
-  event-margin: 8px
+  event-padding: 0 16px
 );
 
 ::ng-deep {
   .gantt-chart {
-    overflow: auto;
-    &::-webkit-scrollbar {
-      height: map-get($table, scrollbar-height);
-      background: map-get($table, tb-backgroud);
-    }
-    &::-webkit-scrollbar-thumb {
-      background: map-get($table, scrollbar-thumb);
-    }
     /* 表格样式 */
     .gantt-table {
-      border: 1px solid map-get($table, border-color);
-      .table-head {
-        display: flex;
-      }
-      .table-row {
-        display: flex;
-      }
-      .table-th {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: map-get($table, th-color);
-        height: map-get($table, th-height);
-        font-weight: map-get($table, th-weight);
-        background: map-get($table, th-backgroud);
-        padding: map-get($table, th-padding);
-        border-bottom: 1px solid map-get($table, border-color);
-        &.has-border-right {
-          border-right: 1px solid map-get($table, border-color);
+      .ant-spin-container {
+        .ant-table-body {
+          border: 1px solid map-get($table, border-color);
+          &::-webkit-scrollbar {
+            height: map-get($table, scrollbar-height);
+            background: map-get($table, tb-backgroud);
+          }
+          &::-webkit-scrollbar-thumb {
+            background: map-get($table, scrollbar-thumb);
+          }
         }
-      }
-      .table-td {
-        color: map-get($table, tb-color);
-        height: map-get($table, tb-height);
-        background: map-get($table, tb-backgroud);
-        padding: map-get($table, tb-padding);
-        border-bottom: 1px solid map-get($table, border-color);
-        &.has-border-right {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-right: 1px solid map-get($table, border-color);
+        .ant-table-thead > tr > th {
+          color: map-get($table, th-color);
+          height: map-get($table, th-height);
+          text-align: map-get($table, th-align);
+          font-weight: map-get($table, th-weight);
+          background: map-get($table, th-backgroud);
+          padding: map-get($table, th-padding);
+          border-color: map-get($table, border-color);
+          &.has-border-right {
+            border-right: 1px solid map-get($table, border-color);
+          }
         }
-        .has-event {
-          display: flex;
-          align-items: center;
-          height: 100%;
-          border-radius: map-get($table, event-radius);
-          padding: map-get($table, event-padding);
-          margin-left: map-get($table, event-margin);
+        .ant-table-tbody > tr > td {
+          color: map-get($table, tb-color);
+          height: map-get($table, tb-height);
+          text-align: map-get($table, tb-align);
+          background: map-get($table, tb-backgroud);
+          padding: map-get($table, tb-padding);
+          border-color: map-get($table, border-color);
+          &.has-border-right {
+            border-right: 1px solid map-get($table, border-color);
+          }
+          .has-event {
+            display: flex;
+            align-items: center;
+            height: 100%;
+            border-radius: map-get($table, event-radius);
+            padding: map-get($table, event-padding);
+          }
         }
-      }
-      .table-body > .table-row:last-child > .table-td {
-        border-bottom: none;
+        .ant-table-tbody > .ant-table-row:last-child > td {
+          border-bottom: none;
+        }
+        .ant-table-placeholder {
+          border: 1px solid map-get($table, border-color);
+          background: map-get($table, tb-backgroud);
+          .ant-empty-description {
+            color: map-get($table, tb-color);
+          }
+        }
       }
     }
   }

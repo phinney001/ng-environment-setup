@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild, AfterViewInit, Input } from '@angular/core'
 import { GaodeMapService } from './gaode-map.service'
+import { Subject } from 'rxjs'
 
 export declare const AMap
-declare const window
 
 @Component({
   selector: 'app-gaode-map',
@@ -14,15 +14,19 @@ declare const window
     }`
   ],
 })
-export class GaodeMapComponent implements AfterViewInit {
+export class GaodeMapComponent {
   // 地图容器元素
   @ViewChild('mapEle', { static: false }) mapEle
   // 地图实例
-  public map = {}
+  public map: any = {}
+  // 地图加载订阅
+  public load = new Subject()
 
   constructor(
     private mapService: GaodeMapService
-  ) {}
+  ) {
+    this.instance()
+  }
 
   // 地图配置
   @Input() config: any = {}
@@ -221,20 +225,31 @@ export class GaodeMapComponent implements AfterViewInit {
   }
 
   /**
-   * 地图实例创建
+   * 地图搜索
+   * @param arg 参数
    */
-  private instance() {
-    this.map = new AMap.Map(this.mapEle.nativeElement, this.config)
+  public districtSearch(...arg) {
+    console.log(AMap)
+    return new AMap.DistrictSearch(...arg)
   }
 
   /**
-   * 元素渲染
+   * 地图行政省区
+   * @param arg 参数
    */
-  ngAfterViewInit() {
-    window.onLoad = () => {
-      this.instance()
-    }
-    this.mapService.load()
+  public province(...arg) {
+    console.log(AMap)
+    return new AMap.DistrictLayer.Province(...arg)
+  }
+
+  /**
+   * 地图实例创建
+   */
+  public instance() {
+    this.mapService.load(() => {
+      this.map = new AMap.Map(this.mapEle.nativeElement, this.config)
+      this.load.next(this.map)
+    })
   }
 
 }

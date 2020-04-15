@@ -12,7 +12,7 @@ import {
   HttpResponse,
   HttpUserEvent
 } from '@angular/common/http'
-import { Observable, of } from 'rxjs'
+import { Observable, of, timer } from 'rxjs'
 import { mergeMap, catchError } from 'rxjs/operators'
 import { NzMessageService, NzModalService } from 'ng-zorro-antd'
 import { UserService } from '@app/core/user.service'
@@ -24,6 +24,11 @@ export class AjaxInterceptor implements HttpInterceptor {
   constructor(
     private injector: Injector
   ) { }
+
+  // 错误信息列表
+  messageList: any = [];
+  // 错误信息定时器
+  messageTimer
 
   // 模态框服务
   get modal(): NzModalService {
@@ -88,6 +93,7 @@ export class AjaxInterceptor implements HttpInterceptor {
   ): Observable<any> {
     const eventClone: any = event
     if (this.isHttpResponse(event)) {
+      const interfaceMsg = eventClone.error && eventClone.error.message
       switch (event.status) {
         case 200:
           const interfaceStatus = eventClone.body && eventClone.body.status
@@ -97,31 +103,58 @@ export class AjaxInterceptor implements HttpInterceptor {
                   eventClone.body = interfaceValue || true
                   break
               case '2002': // 登录失效
-                  this.msg.error(interfaceValue || '登录已超时，请重新登录！')
+                  this.dealMsg(interfaceValue || '登录已超时，请重新登录！')
                   eventClone.body = false
                   this.logout()
                   break
               default: // 请求失败
-                  this.msg.error(interfaceValue || '操作失败！')
+                if (event instanceof HttpErrorResponse) {
+                  this.dealMsg(interfaceValue || '操作失败！')
                   eventClone.body = false
-                  break
+                }
+                break
           }
           break
+        case 401: // 登录失效
+          this.dealMsg(interfaceMsg || '登录已超时，请重新登录！')
+          this.logout()
+          break
         case 404:
-          this.msg.error('请求地址不存在！')
+          this.dealMsg(interfaceMsg || '请求地址不存在')
           break
         case 500:
-          this.msg.error('服务器错误！')
+          this.dealMsg(interfaceMsg || '服务器错误!')
           break
         case 503:
-          this.msg.error('服务器超时！')
+          this.dealMsg(interfaceMsg || '服务器超时!')
           break
         default:
-          this.msg.error(`${event.status}：请求错误！`);
+          this.dealMsg(interfaceMsg || '请求错误!')
           break
       }
     }
+    if (eventClone.error || eventClone instanceof HttpErrorResponse) {
+      throw new Error(eventClone)
+    }
     return of(eventClone)
+  }
+
+  /**
+   * 处理错误信息
+   * @param msg 错误信息
+   */
+  dealMsg(msg: string) {
+    this.messageList.push(msg)
+    this.messageList = [...new Set(this.messageList)]
+    if (this.messageTimer) {
+      this.messageTimer.unsubscribe()
+    }
+    this.messageTimer = timer(100).subscribe(() => {
+      while (this.messageList.length) {
+        this.msg.error(this.messageList[0])
+        this.messageList.shift()
+      }
+    })
   }
 
   /**
@@ -144,13 +177,29 @@ export class AjaxInterceptor implements HttpInterceptor {
     const newReq: any = req.clone({
       headers: this.usr.isLogined ? new HttpHeaders().set('token', this.usr.token) : new HttpHeaders()
     })
+
+    // 开发代码待删除
+    if (newReq.url.endsWith('/test/array')) {
+      return of(new HttpResponse({
+        status: 200,
+        body: []
+      }))
+    }
+    if (newReq.url.endsWith('/test/object')) {
+      return of(new HttpResponse({
+        status: 200,
+        body: {}
+      }))
+    }
+    // 开发代码待删除
+
     return next.handle(newReq).pipe(
       mergeMap((event: any) => {
-          if (this.isHttpResponse(event)) {
-              return this.handleData(event)
-          } else {
-              return of(event)
-          }
+        if (this.isHttpResponse(event)) {
+          return this.handleData(event)
+        } else {
+          return of(event)
+        }
       }),
       catchError((err: HttpErrorResponse) => this.handleData(err))
     )

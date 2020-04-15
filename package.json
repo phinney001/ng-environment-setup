@@ -1,33 +1,61 @@
 {
-  "name": "ng-environment-setup",
-  "version": "1.0.15",
-  "description": "ng environment setup",
-  "main": "init.js",
-  "scripts": {
-    "test": "node init test"
+  "_from": "ng-environment-setup@1.0.17",
+  "_id": "ng-environment-setup@1.0.17",
+  "_inBundle": false,
+  "_integrity": "sha512-uIgpi9BcbAYTCX6UNBNG3/QlpqGV1kAsaoK3dMyvsGxV27oduoUHUOs5TrVO+934Pz9lOmVrsdlLvl3BOdv+qQ==",
+  "_location": "/ng-environment-setup",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "ng-environment-setup@1.0.17",
+    "name": "ng-environment-setup",
+    "escapedName": "ng-environment-setup",
+    "rawSpec": "1.0.17",
+    "saveSpec": null,
+    "fetchSpec": "1.0.17"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/phinney001/ng-environment-setup.git"
-  },
-  "keywords": [
-    "ng",
-    "angular",
-    "front-end",
-    "environment"
+  "_requiredBy": [
+    "#USER",
+    "/"
   ],
-  "author": "phinney",
-  "license": "ISC",
+  "_resolved": "https://registry.npmjs.org/ng-environment-setup/-/ng-environment-setup-1.0.17.tgz",
+  "_shasum": "d0e06814c8fac7ee5a4c09af4d072ba9ab35d0d9",
+  "_spec": "ng-environment-setup@1.0.17",
+  "_where": "C:\\Users\\phinn\\Desktop\\Exercise\\ng-environment-setup",
+  "author": {
+    "name": "phinney"
+  },
   "bin": {
     "nes": "bin/nes"
   },
   "bugs": {
     "url": "https://github.com/phinney001/ng-environment-setup/issues"
   },
-  "homepage": "https://github.com/phinney001/ng-environment-setup#readme",
+  "bundleDependencies": false,
   "dependencies": {
     "ansi-colors": "^4.1.1",
     "inquirer": "^7.1.0",
     "request": "^2.88.2"
-  }
+  },
+  "deprecated": false,
+  "description": "ng environment setup",
+  "homepage": "https://github.com/phinney001/ng-environment-setup#readme",
+  "keywords": [
+    "ng",
+    "angular",
+    "front-end",
+    "environment"
+  ],
+  "license": "ISC",
+  "main": "init.js",
+  "name": "ng-environment-setup",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phinney001/ng-environment-setup.git"
+  },
+  "scripts": {
+    "test": "node init test"
+  },
+  "version": "1.0.17"
 }

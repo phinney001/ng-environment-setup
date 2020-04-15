@@ -31,6 +31,20 @@ export interface Gantt {
   list: GanttEvent[]
 }
 
+export interface GanttList {
+  // 事件标题
+  title?: string
+  // 时间
+  date: any
+}
+
+export interface GanttMap {
+  // 名称
+  name: string
+  // 事件列表
+  list: GanttList[]
+}
+
 @Component({
   selector: 'app-gantt',
   templateUrl: './gantt.component.html',
@@ -49,8 +63,10 @@ export class GanttComponent implements OnInit {
   // 是否使用提示框
   @Input() tooltip = false
 
-  // 表格宽度，默认100%
-  @Input() width = 0
+  // 背景颜色对象列表
+  @Input() bgList: any = {}
+  // 文字颜色对象列表
+  @Input() colorList: any = {}
 
   // 甘特图数据列表
   @Input()
@@ -59,14 +75,6 @@ export class GanttComponent implements OnInit {
   }
   get data(): any[] {
     return this.ganttData || []
-  }
-
-  // 获取单元格宽度
-  get cellWidth() {
-    if (this.width) {
-      return this.width / (this.heads.length + 1) + 'px'
-    }
-    return 100 / (this.heads.length + 1) + '%'
   }
 
   /**
@@ -90,31 +98,48 @@ export class GanttComponent implements OnInit {
             list: this.heads.reduce((t, c) => {
               const findCurrent = x.list.find(y => y.value.includes(c))
               if (findCurrent) {
-                const prev = [...t].pop()
-                if (!t.length || (prev.title !== findCurrent.title)) {
-                  let colspan = findCurrent.value && findCurrent.value.length
-                  const cellWidth = parseFloat(this.cellWidth)
-                  if (prev && prev.value && prev.value.includes(findCurrent.value[0])) {
-                    colspan -= 0.5
-                  }
-                  if (x.list.some(y => y.title !== findCurrent.title && y.value.includes([...findCurrent.value].pop()))) {
-                    colspan -= 0.5
-                  }
+                if (!t.length || ([...t].pop().title !== findCurrent.title)) {
                   t.push({
                     ...findCurrent,
-                    colspan,
-                    width: cellWidth * colspan + (this.width ? 'px' : '%')
+                    colspan: findCurrent.value && findCurrent.value.length
                   })
                 }
                 return t
               }
               t.push({
-                colspan: 1,
-                width: this.cellWidth
+                colspan: 1
               })
               return t
             }, [])
           }
+        })
+      }
+
+      const isGanttList = data.every(x => x.hasOwnProperty('name') && x.list instanceof Array
+      && x.list.every(y => y.hasOwnProperty('date')))
+      if (isGanttList) {
+        return data.map((x, xIndex) => {
+          if (!xIndex) {
+            this.heads = x.list.map((y: any) => y.date)
+          }
+          x.list = x.list.reduce((t, c) => {
+            const findCurrent = x.list.filter(y => c.title && c.title === y.title)
+            if (findCurrent.length) {
+              if (!t.length || ([...t].pop().title !== findCurrent[0].title)) {
+                t.push({
+                  title: findCurrent[0].title,
+                  value: findCurrent.map((v: any) => v.date),
+                  colspan: findCurrent.length
+                })
+              }
+              return t
+            }
+            t.push({
+              colspan: 1
+            })
+            return t
+          }, [])
+          return x
         })
       }
 
@@ -124,6 +149,7 @@ export class GanttComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.ganttData)
   }
 
 }
