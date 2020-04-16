@@ -26,3 +26,23 @@
   ```bash
   nes
   ```
+# 生成路由
+  在项目目录创建.router文件
+  文件内容如: 
+  module.exports = [
+    {
+      id: 1,
+      title: '父级路由',
+      name: 'moduleName',
+      children: [
+        {
+          id: 101,
+          title: '子集路由1',
+          link: '/moduleName/routeName'
+        }
+      ]
+    }
+  ]
+  ```bash
+  nes router
+  ```

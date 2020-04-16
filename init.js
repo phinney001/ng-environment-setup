@@ -1,14 +1,15 @@
-const request = require('request')
 const fs = require('fs')
 const path = require('path')
 const { prompt } = require('inquirer')
-const { execSync } = require('child_process')
-const { red, yellow, green } = require('ansi-colors')
-const router = require('./router.js')
+const { yellow, green } = require('ansi-colors')
+const Router = require('./router.js')
+const Common = require('./common.js')
 
-class AngularCli {
+class AngularCli extends Common {
 
   constructor() {
+    super()
+
     // angular.json改写列表
     this.angularJsonRewriteList = {
       replaceList: [],
@@ -73,197 +74,6 @@ class AngularCli {
         ]
       },
     ]
-
-    // 项目路径
-    this.projectPath = process.cwd()
-  }
-
-  /**
-   * 判断数据是否是数组
-   * @param {*} data
-   * @returns {boolean}
-   */
-  isArray(data) {
-    return data instanceof Array
-  }
-
-  /**
-   * 判断数据是否是字符串
-   * @param {*} str
-   * @returns {boolean}
-   */
-  isString(str) {
-    return typeof str === 'string'
-  }
-
-  /**
-   * 执行命令
-   * @param {string} command 命令字符串
-   * @param {function} callback 回调函数
-   */
-  execCommand(command, callback) {
-    const stdout = execSync(command, { cwd: this.projectPath, encoding: 'utf8', stdio: 'inherit' })
-    console.log(green(stdout))
-    if (callback) {
-      callback()
-    }
-    // if (error) {
-    // 	console.log(red(`ERROR: ${error}`))
-    // } else {
-    // 	if (stderr) {
-    // 		stderr.on('data', (msg) => {
-    // 			if (msg.includes('ERR')) {
-    // 				console.log(red(msg))
-    // 			}
-    // 			if (msg.includes('WARN')) {
-    // 				console.log(yellow(msg))
-    // 			}
-    // 		})
-    // 	}
-    // 	stdout.on('data', (msg) => {
-    // 		console.log(green(msg))
-    // 	})
-    // 	if (callback) {
-    // 		callback()
-    // 	}
-    // }
-  }
-
-  /**
-   * 改写文件内容
-   * @param {string} filePath 文件路径
-   * @param {RewriteFileOptions} options 改写配置
-   * @RewriteFileOptions {Array} replaceList 字符串替换列表，例：{ before: 'a', after: 'b', all: true }
-   * @RewriteFileOptions {Array} matchList 根据前后字符串匹配并添加字符串列表，例：{ match: 'const a = [|]', item: 'bbb', space: 2, cover: true }
-   * @RewriteFileOptions {Array} importList 引入模块字符串列表 例：`import a from 'a'`
-   */
-  rewriteFile(filePath, options = {}) {
-    const fileName = filePath.split('/').pop()
-    filePath = path.join(this.projectPath, filePath)
-    console.log(green(`${fileName} updating. . .`))
-    let fileString = fs.readFileSync(filePath, 'utf-8')
-    fileString = fileString.replace(new RegExp('\r\n', 'g'), '\n')
-
-    // 字符串替换
-    if (this.isArray(options.replaceList)) {
-      options.replaceList.forEach(rp => {
-        if (!fileString.includes(rp.after)) {
-          fileString = fileString.replace(rp.all ? new RegExp(rp.before, 'g') : rp.before, rp.after)
-        }
-      })
-    }
-    // 根据前后字符串匹配并添加字符串
-    if (this.isArray(options.matchList)) {
-      options.matchList.forEach(mt => {
-        const initString = mt.match.replace('|', '')
-        const spaceCount = mt.space || 0
-        let startString = mt.match.split('|')[0]
-        let endString = mt.match.split('|')[1]
-        if (fileString.includes(initString)) {
-          startString = `${startString}\n${' '.repeat(spaceCount + 2)}`
-          endString = `\n${' '.repeat(spaceCount)}${endString}`
-          fileString = fileString.replace(initString, `${startString}${mt.item}${endString}`)
-        } else {
-          startString = startString.replace('[', '\\[')
-          endString = `\n${' '.repeat(spaceCount)}${endString.replace(']', '\\]')}`
-          const matchStringArray = fileString.match(new RegExp(`${startString}([\\s\\S]*?)${endString}`))
-          const matchString = matchStringArray && matchStringArray[1]
-          const linkString = `${mt.cover ? '' : ','}\n${' '.repeat(spaceCount + 2)}`
-          if (!matchString.includes(mt.item)) {
-            fileString = fileString.replace(matchString, `${mt.cover ? '' : matchString}${linkString}${mt.item}`)
-          }
-        }
-      })
-    }
-    // 引入模块字符串列表
-    if (this.isArray(options.importList)) {
-      options.importList.forEach(ip => {
-        if (!fileString.includes(ip)) {
-          const lineStartIndex = fileString.lastIndexOf('import ')
-          const lineEndIndex = fileString.indexOf('\n', lineStartIndex)
-          const lastImportString = fileString.substring(lineStartIndex, lineEndIndex)
-          fileString = fileString.replace(`${lastImportString}`, `${lastImportString}\n${ip}`)
-        }
-      })
-    }
-
-    fs.writeFileSync(filePath, fileString, 'utf-8')
-    console.log(green(`${fileName} update completed.`))
-  }
-
-  /**
-   * 生成文件
-   * @param {string} filePath 文件路径
-   * @param {string} fileString 文件内容字符串
-   */
-  generateFile(filePath, fileString) {
-    const fileName = filePath.split('/').pop()
-    filePath = path.join(this.projectPath, filePath)
-    console.log(green(`${fileName} creating. . .`))
-    if (fs.existsSync(filePath)) {
-      return console.log(yellow(`${fileName} already exists.`))
-    }
-    fs.mkdirSync(filePath.replace(`${fileName}`, ''), { recursive: true })
-    fs.writeFileSync(filePath, fileString, 'utf-8')
-    console.log(green(`${fileName} create completed.`))
-  }
-
-  /**
-   * 保存网络图片到本地
-   * @param {string} linkPath 图片链接地址
-   * @param {string} writePath 图片写入路径
-   */
-  downloadImage(linkPath, writePath) {
-    const fileName = writePath.split('/').pop()
-    writePath = path.join(this.projectPath, writePath)
-    console.log(green(`${fileName} downloading. . .`))
-    fs.mkdirSync(writePath.replace(`${fileName}`, ''), { recursive: true })
-    const writeStream = fs.createWriteStream(writePath)
-
-    const readStream = request(linkPath)
-    readStream.pipe(writeStream)
-    readStream.on('error', err => {
-      console.log(red(`ERROR: ${err}`))
-    })
-
-    writeStream.on('finish', () => {
-      console.log(green(`${fileName} download completed.`))
-      writeStream.end()
-    })
-  }
-
-  /**
-   * 获取模板
-   * @param {string} filepath 路径名称
-   */
-  getTemplate(filepath) {
-    return fs.readFileSync(path.join(__dirname, `./templates${filepath}`), 'utf-8')
-  }
-
-  /**
-   * 拷贝目录
-   * @param oldPath 旧目录路径
-   * @param newPath 新目录路径
-   * @param isMove 是否删除旧目录文件
-   */
-  copyDir(oldPath, newPath, isMove) {
-    const fileList = fs.readdirSync(path.join(__dirname, oldPath))
-    fileList.forEach(filePath => {
-      const oldFilePath = `${oldPath}/${filePath}`
-      const newFilePath = `${newPath}/${filePath}`
-      fs.mkdirSync(path.join(this.projectPath, newPath), { recursive: true })
-      if (['.html', '.scss', '.ts'].some(t => filePath.endsWith(t))) {
-        fs.copyFileSync(path.join(__dirname, oldFilePath), path.join(this.projectPath, newFilePath))
-        if (isMove) {
-          fs.unlinkSync(path.join(__dirname, oldFilePath))
-          if (!fs.readdirSyncpath.join(__dirname, (oldPath)).length) {
-            fs.rmdirSync(path.join(__dirname, oldPath))
-          }
-        }
-      } else {
-        this.copyDir(oldFilePath, newFilePath, isMove)
-      }
-    })
   }
 
   /**
@@ -984,154 +794,14 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
   }
 
   /**
-   * 英文字符串首字母大写
-   * @param {*} str 英文字符串 
-   * @returns {string}
-   */
-  getFirstLetterUpper(str) {
-    if (this.isString(str) && str[0]) {
-      return str[0].toUpperCase() + str.substr(1)
-    }
-    return ''
-  }
-
-  /**
-   * 创建空白组件
-   * @param {string} filePath 组件路径
-   * @param {string} fileName 组件名称
-   * @param {string} fileTitle 组件标题
-   */
-  createBlankComponent(filePath, fileName, fileTitle) {
-    const templatePreFixPath = '/routes/templet/templet.component.'
-    const preFixPath = `${filePath}/${fileName}/${fileName}.component.`
-    const preFixList = ['html', 'scss', 'ts']
-    preFixList.forEach(suffix => {
-      let templateString = this.getTemplate(templatePreFixPath + suffix)
-      templateString = templateString.replace(new RegExp('templet', 'g'), fileName)
-      templateString = templateString.replace(new RegExp('Templet-Title', 'g'), fileTitle)
-      templateString = templateString.replace(new RegExp('Templet', 'g'), this.getFirstLetterUpper(fileName))
-      this.generateFile(preFixPath + suffix, templateString)
-    })
-  }
-
-  /**
-   * 创建空白模块
-   * @param {string} filePath 模块路径
-   * @param {string} fileName 模块名称
-   * @param {string} fileTitle 模块标题
-   */
-  createBlankModule(filePath, fileName, fileTitle) {
-    const templatePath = '/modules/templet.module.ts'
-    const fileFullPath = `${filePath}/${fileName}/${fileName}.module.ts`
-    let templateString = this.getTemplate(templatePath)
-    templateString = templateString.replace(new RegExp('templet', 'g'), fileName)
-    templateString = templateString.replace(new RegExp('Templet-Title', 'g'), fileTitle)
-    templateString = templateString.replace(new RegExp('Templet', 'g'), this.getFirstLetterUpper(fileName))
-    this.generateFile(fileFullPath, templateString)
-  }
-
-  /**
-   * 添加路由配置
-   * @param {string} routePath 路由组件路径
-   * @param {string} moduleName 模块名称
-   * @param {string} fileName 组件名称
-   * @param {string} fileTitle 组件标题
-   * @param {string} isModule 是否是模块
-   */
-  addRouteConfig(routePath, moduleName, fileName, fileTitle, isModule) {
-    const upperFileName = this.getFirstLetterUpper(fileName)
-    const modulePath = `${routePath}/${moduleName}.module.ts`
-    const filePath = routePath.replace('/src/app', '@app')
-    const rewriteList = {
-      replaceList: [],
-      matchList: [],
-      importList: []
-    }
-    rewriteList.replaceList = [
-      {
-        before: `redirectTo: 'route'`,
-        after: `redirectTo: '${fileName}'`
-      }  
-    ]
-    if (isModule) {
-      rewriteList.matchList.push(
-        {
-          match: 'const routes: Routes = [|]',
-          item: `{ path: '${fileName}', loadChildren: () => import('./${fileName}/${fileName}.module').then(m => m.${upperFileName}Module), data: { title: '${fileTitle}' } }`
-        }
-      )
-    } else {
-      rewriteList.importList.push(`import { ${upperFileName}Component } from '${filePath}/${fileName}/${fileName}.component'`)
-      rewriteList.matchList.push(
-        {
-          match: 'declarations: [|]',
-          item: `${upperFileName}Component`,
-          space: 2
-        },
-        {
-          match: 'const routes: Routes = [|]',
-          item: `{ path: '${fileName}', component: ${upperFileName}Component, data: { title: '${fileTitle}' } }`
-        }
-      )
-    }
-    this.rewriteFile(modulePath, rewriteList)
-  }
-
-  /**
-   * 生成路由
-   * @param {string} moduleName 模块名称
-   * @param {string} routerList 路由列表
-   * @param {string} routePath 路由组件路径
-   */
-  generateRoute(moduleName, routerList, routePath) {
-    routerList.forEach(route => {
-      if (route.link && route.link !== '/') {
-        const fileName = route.link.split('/').pop()
-        this.createBlankComponent(routePath, fileName, route.title)
-        this.addRouteConfig(routePath, moduleName, fileName, route.title)
-        if (this.isArray(route.children)) {
-          this.generateRoute(moduleName, route.children, `${routePath}/${fileName}`)
-        }
-      } else {
-        if (route.name) {
-          this.createBlankModule(routePath, route.name, route.title)
-          this.addRouteConfig(routePath, moduleName, route.name, route.title, true)
-          if (this.isArray(route.children)) {
-            this.generateRoute(route.name, route.children, `${routePath}/${route.name}`)
-          }
-        }
-      }
-    })
-  }
-
-  /**
-   * 生成路由命令
-   */
-  router() {
-    const routerPath = `${process.cwd()}/.router`
-    if (fs.existsSync(routerPath)) {
-      const routerList = require(routerPath)
-      const routeBasePath = '/src/app/routes'
-      const routesPath = `${process.cwd()}${routeBasePath}/routes.module.ts`
-      if (fs.existsSync(routesPath)) {
-        this.generateRoute('routes', routerList, routeBasePath)
-      } else {
-        console.log(red('/src/app/routes/routes.module.ts must exists.'))
-      }
-    } else {
-      console.log(red('.router must exists.'))
-    }
-  }
-
-  /**
    * 安装环境
    */
   start() {
     let projectName = Array.from(process.argv).slice(2).join(' ')
     if (projectName) {
       if (projectName === 'router') {
-        const Router = new router()
-        Router.start()
+        const router = new Router()
+        router.start()
       } else {
         this.next(projectName)
       }
