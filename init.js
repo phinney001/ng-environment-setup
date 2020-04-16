@@ -4,6 +4,7 @@ const path = require('path')
 const { prompt } = require('inquirer')
 const { execSync } = require('child_process')
 const { red, yellow, green } = require('ansi-colors')
+const router = require('./router.js')
 
 class AngularCli {
 
@@ -988,7 +989,10 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
    * @returns {string}
    */
   getFirstLetterUpper(str) {
-    return str[0].toUpperCase() + str.substr(1)
+    if (this.isString(str) && str[0]) {
+      return str[0].toUpperCase() + str.substr(1)
+    }
+    return ''
   }
 
   /**
@@ -998,13 +1002,14 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
    * @param {string} fileTitle 组件标题
    */
   createBlankComponent(filePath, fileName, fileTitle) {
-    const templatePreFixPath = '/routes/template/template.component.'
+    const templatePreFixPath = '/routes/templet/templet.component.'
     const preFixPath = `${filePath}/${fileName}/${fileName}.component.`
-    ['html', 'scss', 'ts'].forEach(suffix => {
+    const preFixList = ['html', 'scss', 'ts']
+    preFixList.forEach(suffix => {
       let templateString = this.getTemplate(templatePreFixPath + suffix)
-      templateString = templateString.replace(new RegExp('template', 'g'), fileName)
-      templateString = templateString.replace(new RegExp('Template', 'g'), this.getFirstLetterUpper(fileName))
-      templateString = templateString.replace(new RegExp('Template-Title', 'g'), fileTitle)
+      templateString = templateString.replace(new RegExp('templet', 'g'), fileName)
+      templateString = templateString.replace(new RegExp('Templet-Title', 'g'), fileTitle)
+      templateString = templateString.replace(new RegExp('Templet', 'g'), this.getFirstLetterUpper(fileName))
       this.generateFile(preFixPath + suffix, templateString)
     })
   }
@@ -1016,29 +1021,38 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
    * @param {string} fileTitle 模块标题
    */
   createBlankModule(filePath, fileName, fileTitle) {
-    const templatePath = '/modules/template.module.ts'
+    const templatePath = '/modules/templet.module.ts'
     const fileFullPath = `${filePath}/${fileName}/${fileName}.module.ts`
     let templateString = this.getTemplate(templatePath)
-    templateString = templateString.replace(new RegExp('template', 'g'), fileName)
-    templateString = templateString.replace(new RegExp('Template', 'g'), this.getFirstLetterUpper(fileName))
-    templateString = templateString.replace(new RegExp('Template-Title', 'g'), fileTitle)
+    templateString = templateString.replace(new RegExp('templet', 'g'), fileName)
+    templateString = templateString.replace(new RegExp('Templet-Title', 'g'), fileTitle)
+    templateString = templateString.replace(new RegExp('Templet', 'g'), this.getFirstLetterUpper(fileName))
     this.generateFile(fileFullPath, templateString)
   }
 
   /**
    * 添加路由配置
+   * @param {string} routePath 路由组件路径
    * @param {string} moduleName 模块名称
    * @param {string} fileName 组件名称
    * @param {string} fileTitle 组件标题
    * @param {string} isModule 是否是模块
    */
-  addRouteConfig(modulePath, fileName, fileTitle, isModule) {
+  addRouteConfig(routePath, moduleName, fileName, fileTitle, isModule) {
     const upperFileName = this.getFirstLetterUpper(fileName)
+    const modulePath = `${routePath}/${moduleName}.module.ts`
+    const filePath = routePath.replace('/src/app', '@app')
     const rewriteList = {
       replaceList: [],
       matchList: [],
       importList: []
     }
+    rewriteList.replaceList = [
+      {
+        before: `redirectTo: 'route'`,
+        after: `redirectTo: '${fileName}'`
+      }  
+    ]
     if (isModule) {
       rewriteList.matchList.push(
         {
@@ -1047,7 +1061,7 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
         }
       )
     } else {
-      rewriteList.importList.push(`import { ${upperFileName}Component } from '@app/routes/${fileName}/${fileName}.component'`)
+      rewriteList.importList.push(`import { ${upperFileName}Component } from '${filePath}/${fileName}/${fileName}.component'`)
       rewriteList.matchList.push(
         {
           match: 'declarations: [|]',
@@ -1070,19 +1084,18 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
    * @param {string} routePath 路由组件路径
    */
   generateRoute(moduleName, routerList, routePath) {
-    const modulePath = `${routePath}/${moduleName}.module.ts`
     routerList.forEach(route => {
-      if (route.link) {
-        const fileName = route.link.replace('/', '')
+      if (route.link && route.link !== '/') {
+        const fileName = route.link.split('/').pop()
         this.createBlankComponent(routePath, fileName, route.title)
-        this.addRouteConfig(modulePath, fileName, route.title)
+        this.addRouteConfig(routePath, moduleName, fileName, route.title)
         if (this.isArray(route.children)) {
-          this.generateRoute(moduleName, route.children, routePath + route.link)
+          this.generateRoute(moduleName, route.children, `${routePath}/${fileName}`)
         }
       } else {
         if (route.name) {
           this.createBlankModule(routePath, route.name, route.title)
-          this.addRouteConfig(modulePath, route.name, route.title, true)
+          this.addRouteConfig(routePath, moduleName, route.name, route.title, true)
           if (this.isArray(route.children)) {
             this.generateRoute(route.name, route.children, `${routePath}/${route.name}`)
           }
@@ -1117,7 +1130,8 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
     let projectName = Array.from(process.argv).slice(2).join(' ')
     if (projectName) {
       if (projectName === 'router') {
-        this.router()
+        const Router = new router()
+        Router.start()
       } else {
         this.next(projectName)
       }

@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core'
 import { SharedModule } from '@app/shared.module'
 import { RouterModule, Routes } from '@angular/router'
 
-// Template-Title
+// Templet-Title
 const routes: Routes = [
-  { path: '', redirectTo: 'route', pathMatch: 'full' },
+  { path: '', redirectTo: 'route', pathMatch: 'full' }
 ]
 
 @NgModule({
@@ -14,4 +14,4 @@ const routes: Routes = [
     SharedModule
   ]
 })
-export class TemplateModule { }
+export class TempletModule { }
