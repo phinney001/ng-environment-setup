@@ -27,8 +27,8 @@
   nes
   ```
 # 生成路由
-  在项目目录创建.router文件
-  文件内容如: 
+  + 在项目目录创建.router文件，文件内容如: 
+  ```javascript
   module.exports = [
     {
       id: 1,
@@ -43,6 +43,8 @@
       ]
     }
   ]
+  ```
+  + 运行命令
   ```bash
   nes router
   ```
