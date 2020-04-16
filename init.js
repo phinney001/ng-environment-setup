@@ -87,6 +87,15 @@ class AngularCli {
   }
 
   /**
+   * 判断数据是否是字符串
+   * @param {*} str
+   * @returns {boolean}
+   */
+  isString(str) {
+    return typeof str === 'string'
+  }
+
+  /**
    * 执行命令
    * @param {string} command 命令字符串
    * @param {function} callback 回调函数
@@ -937,7 +946,7 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
 
   /**
    * 该项目是否允许断点续传
-   * @param projectName 当前项目名称
+   * @param {string} projectName 当前项目名称
    */
   isAllowBreakContinue(projectName) {
     const history = this.getHistoryFile()
@@ -946,7 +955,7 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
 
   /**
    * 更新历史记录文件
-   * @param projectName 当前项目名称
+   * @param {string} projectName 当前项目名称
    */
   updateHistoryFile(projectName) {
     const history = this.getHistoryFile()
@@ -956,7 +965,7 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
 
   /**
    * 下一步
-   * @param projectName 当前项目名称
+   * @param {string} projectName 当前项目名称
    */
   next(projectName) {
     const projectPath = `${process.cwd()}/${projectName}`
@@ -974,63 +983,141 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
   }
 
   /**
+   * 英文字符串首字母大写
+   * @param {*} str 英文字符串 
+   * @returns {string}
+   */
+  getFirstLetterUpper(str) {
+    return str[0].toUpperCase() + str.substr(1)
+  }
+
+  /**
+   * 创建空白组件
+   * @param {string} filePath 组件路径
+   * @param {string} fileName 组件名称
+   * @param {string} fileTitle 组件标题
+   */
+  createBlankComponent(filePath, fileName, fileTitle) {
+    const templatePreFixPath = '/routes/template/template.component.'
+    const preFixPath = `${filePath}/${fileName}/${fileName}.component.`
+    ['html', 'scss', 'ts'].forEach(suffix => {
+      let templateString = this.getTemplate(templatePreFixPath + suffix)
+      templateString = templateString.replace(new RegExp('template', 'g'), fileName)
+      templateString = templateString.replace(new RegExp('Template', 'g'), this.getFirstLetterUpper(fileName))
+      templateString = templateString.replace(new RegExp('Template-Title', 'g'), fileTitle)
+      this.generateFile(preFixPath + suffix, templateString)
+    })
+  }
+
+  /**
+   * 创建空白模块
+   * @param {string} filePath 模块路径
+   * @param {string} fileName 模块名称
+   * @param {string} fileTitle 模块标题
+   */
+  createBlankModule(filePath, fileName, fileTitle) {
+    const templatePath = '/modules/template.module.ts'
+    const fileFullPath = `${filePath}/${fileName}/${fileName}.module.ts`
+    let templateString = this.getTemplate(templatePath)
+    templateString = templateString.replace(new RegExp('template', 'g'), fileName)
+    templateString = templateString.replace(new RegExp('Template', 'g'), this.getFirstLetterUpper(fileName))
+    templateString = templateString.replace(new RegExp('Template-Title', 'g'), fileTitle)
+    this.generateFile(fileFullPath, templateString)
+  }
+
+  /**
+   * 添加路由配置
+   * @param {string} moduleName 模块名称
+   * @param {string} fileName 组件名称
+   * @param {string} fileTitle 组件标题
+   * @param {string} isModule 是否是模块
+   */
+  addRouteConfig(modulePath, fileName, fileTitle, isModule) {
+    const upperFileName = this.getFirstLetterUpper(fileName)
+    const rewriteList = {
+      replaceList: [],
+      matchList: [],
+      importList: []
+    }
+    if (isModule) {
+      rewriteList.matchList.push(
+        {
+          match: 'const routes: Routes = [|]',
+          item: `{ path: '${fileName}', loadChildren: () => import('./${fileName}/${fileName}.module').then(m => m.${upperFileName}Module), data: { title: '${fileTitle}' } }`
+        }
+      )
+    } else {
+      rewriteList.importList.push(`import { ${upperFileName}Component } from '@app/routes/${fileName}/${fileName}.component'`)
+      rewriteList.matchList.push(
+        {
+          match: 'declarations: [|]',
+          item: `${upperFileName}Component`,
+          space: 2
+        },
+        {
+          match: 'const routes: Routes = [|]',
+          item: `{ path: '${fileName}', component: ${upperFileName}Component, data: { title: '${fileTitle}' } }`
+        }
+      )
+    }
+    this.rewriteFile(modulePath, rewriteList)
+  }
+
+  /**
+   * 生成路由
+   * @param {string} moduleName 模块名称
+   * @param {string} routerList 路由列表
+   * @param {string} routePath 路由组件路径
+   */
+  generateRoute(moduleName, routerList, routePath) {
+    const modulePath = `${routePath}/${moduleName}.module.ts`
+    routerList.forEach(route => {
+      if (route.link) {
+        const fileName = route.link.replace('/', '')
+        this.createBlankComponent(routePath, fileName, route.title)
+        this.addRouteConfig(modulePath, fileName, route.title)
+        if (this.isArray(route.children)) {
+          this.generateRoute(moduleName, route.children, routePath + route.link)
+        }
+      } else {
+        if (route.name) {
+          this.createBlankModule(routePath, route.name, route.title)
+          this.addRouteConfig(modulePath, route.name, route.title, true)
+          if (this.isArray(route.children)) {
+            this.generateRoute(route.name, route.children, `${routePath}/${route.name}`)
+          }
+        }
+      }
+    })
+  }
+
+  /**
+   * 生成路由命令
+   */
+  router() {
+    const routerPath = `${process.cwd()}/.router`
+    if (fs.existsSync(routerPath)) {
+      const routerList = require(routerPath)
+      const routeBasePath = '/src/app/routes'
+      const routesPath = `${process.cwd()}${routeBasePath}/routes.module.ts`
+      if (fs.existsSync(routesPath)) {
+        this.generateRoute('routes', routerList, routeBasePath)
+      } else {
+        console.log(red('/src/app/routes/routes.module.ts must exists.'))
+      }
+    } else {
+      console.log(red('.router must exists.'))
+    }
+  }
+
+  /**
    * 安装环境
    */
   start() {
     let projectName = Array.from(process.argv).slice(2).join(' ')
     if (projectName) {
       if (projectName === 'router') {
-        const routerPath = `${process.cwd()}/.router`
-        if (fs.existsSync(routerPath)) {
-          const routerList = require(routerPath)
-          const routeBasePath = '/src/app/routes'
-          const routesPath = `${process.cwd()}${routeBasePath}/routes.module.ts`
-          if (fs.existsSync(routesPath)) {
-            routerList.forEach(route => {
-              const currentFilePath = `${routeBasePath}${route.link}/`
-              const fileName = route.link.replace('/', '')
-              const upperFileName = fileName[0].toUpperCase() + fileName.substr(1)
-              this.generateFile(currentFilePath + fileName + '.component.html', `<!-- ${route.title} -->\n<div id="page-${fileName}">${upperFileName} Works!</div>`)
-              this.generateFile(currentFilePath + fileName + '.component.scss', `#page-${fileName} {\n}`)
-              this.generateFile(currentFilePath + fileName + '.component.ts', `import { Component, OnInit } from '@angular/core'
-
-@Component({
-  selector: 'app-${fileName}',
-  templateUrl: './${fileName}.component.html',
-  styleUrls: ['./${fileName}.component.scss']
-})
-export class ${upperFileName}Component implements OnInit {
-
-  constructor() { }
-
-  /**
-   * 初始化
-   */
-  ngOnInit() {
-  }
-
-}
-`)
-              this.routesModuleRewriteList.importList.push(`import { ${upperFileName}Component } from '@app/routes/${fileName}/${fileName}.component'`)
-              this.routesModuleRewriteList.matchList.push(
-                {
-                  match: 'declarations: [|]',
-                  item: `${upperFileName}Component`,
-                  space: 2
-                },
-                {
-                  match: 'const routes: Routes = [|]',
-                  item: `{ path: '${fileName}', component: ${upperFileName}Component, data: { title: '${route.title}' } }`
-                }
-              )
-              this.updateRoutesModule(true)
-            })
-          } else {
-            console.log(red('/src/app/routes/routes.module.ts must exists.'))
-          }
-        } else {
-          console.log(red('.router must exists.'))
-        }
+        this.router()
       } else {
         this.next(projectName)
       }
