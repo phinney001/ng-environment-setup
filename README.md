@@ -27,7 +27,7 @@
   nes
   ```
 # 生成路由
-  + 在项目目录创建.router文件，文件内容如: 
+  + 在项目目录创建.router文件，内容如: 
   ```javascript
   module.exports = [
     {
@@ -37,7 +37,7 @@
       children: [
         {
           id: 101,
-          title: '子集路由1',
+          title: '子级路由',
           link: '/moduleName/routeName'
         }
       ]
