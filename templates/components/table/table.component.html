@@ -1,17 +1,132 @@
-<nz-table class="page-table" #nzTable [nzData]="tableData.data" [nzScroll]="tableData.scroll" nzSize="small" nzShowSizeChanger nzShowQuickJumper>
+<!-- ng-zorro-antd version 9.0.0 -->
+<nz-table
+  class="page-table"
+  #nzTable
+  [nzData]="tableData.nzData || []"
+  [nzFrontPagination]="tableData.nzFrontPagination || true"
+  [nzTotal]="tableData.nzTotal"
+  [(nzPageIndex)]="tableData.nzPageIndex"
+  [(nzPageSize)]="tableData.nzPageSize"
+  [nzShowPagination]="tableData.nzShowPagination || true"
+  [nzPaginationPosition]="tableData.nzPaginationPosition || 'bottom'"
+  [nzBordered]="tableData.nzBordered || false"
+  [nzWidthConfig]="tableData.nzWidthConfig || []"
+  [nzSize]="tableData.nzSize || 'default'"
+  [nzLoading]="tableData.nzLoading || false"
+  [nzLoadingIndicator]="tableData.nzLoadingIndicator"
+  [nzLoadingDelay]="tableData.nzLoadingDelay || 0"
+  [nzScroll]="tableData.nzScroll"
+  [nzTitle]="tableData.nzTitle"
+  [nzFooter]="tableData.nzFooter"
+  [nzNoResult]="tableData.nzNoResult"
+  [nzPageSizeOptions]="tableData.nzPageSizeOptions || [ 10, 20, 30, 40, 50 ]"
+  [nzShowQuickJumper]="tableData.nzShowQuickJumper || false"
+  [nzShowSizeChanger]="tableData.nzShowSizeChanger || false"
+  [nzShowTotal]="tableData.nzShowTotal || total"
+  [nzItemRender]="tableData.nzItemRender"
+  [nzHideOnSinglePage]="tableData.nzHideOnSinglePage || false"
+  [nzSimple]="tableData.nzSimple"
+  [nzVirtualItemSize]="tableData.nzVirtualItemSize || 0"
+  [nzVirtualMaxBufferPx]="tableData.nzVirtualMaxBufferPx || 200"
+  [nzVirtualMinBufferPx]="tableData.nzVirtualMinBufferPx || 100"
+  [nzVirtualForTrackBy]="tableData.nzVirtualForTrackBy"
+  (nzPageIndexChange)="indexChange($event)"
+  (nzPageSizeChange)="sizeChange($event)"
+  (nzCurrentPageDataChange)="dataChange($event)"
+  (nzQueryParams)="params($event)">
+  <ng-template #total>
+    <span class="color-999 mg-r8">共{{tableData.data.length}}条</span>
+  </ng-template>
   <thead>
-    <tr>
-      <th *ngFor="let c of tableData.columns" [nzWidth]="c.width" [nzLeft]="c.left" [nzRight]="c.right">{{c.label}}</th>
+    <tr *ngFor="let columns of tableColumns">
+      <ng-container *ngFor="let c of columns">
+        <th
+        *ngIf="c.nzThShowCheckbox"
+        [nzShowCheckbox]="c.check ? !!(tableData.data.length) : c.nzThShowCheckbox"
+        [nzDisabled]="c.nzThDisabled"
+        [nzIndeterminate]="c.check ? checkData.hasChecked : c.nzThIndeterminate"
+        [(nzChecked)]="c.check ? checkData.allChecked : c.nzThChecked"
+        (nzCheckedChange)="c.check ? checkAll($event) : c.nzThCheckedChange($event)"
+        [nzShowRowSelection]="c.check ? !!(tableData.data.length) : c.nzShowRowSelection"
+        [nzSelections]="c.check ? checkData.selection : c.nzSelections"
+        [nzWidth]="c.nzWidth"
+        [nzLeft]="c.nzLeft || false"
+        [nzRight]="c.nzRight || false"
+        [nzAlign]="c.nzAlign"
+        [nzBreakWord]="c.nzBreakWord || false"
+        [nzEllipsis]="c.nzEllipsis || false"
+        [ngClass]="[c.thClass || '']"
+        [attr.colspan]="c.colspan"
+        [attr.rowspan]="c.rowspan">
+          <ng-container *ngTemplateOutlet="c.thTemplate ? customTpl : thTpl; context: { $implicit: c, type: 'th' }"></ng-container>
+          <ng-template #thTpl>
+            <span [innerHtml]="c.thRender ? sanitize.bypassSecurityTrustHtml(c.thRender(c)) : c.label"></span>
+          </ng-template> 
+        </th>
+        <th
+        *ngIf="!c.nzShowCheckbox"
+        [nzShowSort]="c.nzShowSort"
+        [nzSortFn]="c.nzSortFn"
+        [nzSortDirections]="c.nzSortDirections || ['ascend', 'descend', null]"
+        [(nzSortOrder)]="c.nzSortOrder"
+        (nzSortOrderChange)="c.nzSortOrderChange($event)"
+        [nzShowFilter]="c.nzShowFilter"
+        [nzFilterFn]="c.nzFilterFn"
+        [nzFilters]="c.nzFilters"
+        [nzFilterMultiple]="c.nzFilterMultiple || true"
+        (nzFilterChange)="c.nzFilterChange($event)"
+        [nzWidth]="c.nzWidth"
+        [nzLeft]="c.nzLeft || false"
+        [nzRight]="c.nzRight || false"
+        [nzAlign]="c.nzAlign"
+        [nzBreakWord]="c.nzBreakWord || false"
+        [nzEllipsis]="c.nzEllipsis || false"
+        [nzColumnKey]="c.nzColumnKey"
+        [ngClass]="[c.thClass || '']"
+        [attr.colspan]="c.colspan"
+        [attr.rowspan]="c.rowspan">
+          <ng-container *ngTemplateOutlet="c.thTemplate ? customTpl : thTpl; context: { $implicit: c, type: 'th' }"></ng-container>
+          <ng-template #thTpl>
+            <span [innerHtml]="c.thRender ? sanitize.bypassSecurityTrustHtml(c.thRender(c)) : c.label"></span>
+          </ng-template> 
+        </th>
+      </ng-container>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let item of nzTable.data">
-      <td *ngFor="let c of tableData.columns" [ngClass]="[c.class || '']" [nzLeft]="c.left" [nzRight]="c.right">
-        <ng-container *ngTemplateOutlet="c.template ? tdCustomTpl : tdTpl; context: { $implicit: item, column: c }"></ng-container>
-        <ng-template #tdTpl>
-          <span [innerHtml]="c.render ? sanitize.bypassSecurityTrustHtml(c.render(item)) : item[c.value]"></span>
-        </ng-template>
-      </td>
-    </tr>
+    <ng-container *ngFor="let item of tableData.nzData">
+      <tr
+      [class.active]="tableData.active === item.id"
+      (click)="changeActive(item.id)">
+        <td
+        *ngFor="let c of realColumns"
+        [nzShowCheckbox]="c.check || c.nzShowCheckbox"
+        [nzDisabled]="c.nzDisabled"
+        [nzIndeterminate]="c.nzIndeterminate"
+        [(nzChecked)]="c.check ? checkData.ids[item.id] : c.nzChecked"
+        (nzCheckedChange)="c.check ? refreshStatus() : c.nzCheckedChange($event)"
+        [nzShowExpand]="c.nzShowExpand"
+        [(nzExpand)]="c.nzExpand"
+        (nzExpandChange)="c.nzExpandChange($event)"
+        [nzLeft]="c.nzLeft || false"
+        [nzRight]="c.nzRight || false"
+        [nzAlign]="c.nzAlign"
+        [nzBreakWord]="c.nzBreakWord || false"
+        [nzEllipsis]="c.nzEllipsis || false"
+        [nzIndentSize]="c.nzIndentSize"
+        [ngClass]="[c.class || '']">
+          <ng-container *ngTemplateOutlet="c.template ? customTpl : tdTpl; context: { $implicit: item, column: c, type: 'td' }"></ng-container>
+          <ng-template #tdTpl>
+            <span [innerHtml]="c.render ? sanitize.bypassSecurityTrustHtml(c.render(item)) : item[c.value]"></span>
+          </ng-template> 
+        </td>
+      </tr>
+      <tr [nzExpand]="item.expand || item.nzExpand">
+        <ng-container *ngTemplateOutlet="item.expandTemplate ? customTpl : expandTpl; context: { $implicit: item, type: 'expand' }"></ng-container>
+        <ng-template #expandTpl>
+          <span [innerHtml]="item.expandRender ? sanitize.bypassSecurityTrustHtml(item.expandRender(item)) : item.expandText"></span>
+        </ng-template> 
+      </tr>
+    </ng-container>
   </tbody>
 </nz-table>

@@ -20,9 +20,10 @@ class Router extends Common {
     const preFixList = ['html', 'scss', 'ts']
     preFixList.forEach(suffix => {
       let templateString = this.getTemplate(templatePreFixPath + suffix)
+      const componentName = fileName.split('-').map(x => this.getFirstLetterUpper(x)).join('')
       templateString = templateString.replace(new RegExp('templet', 'g'), fileName)
       templateString = templateString.replace(new RegExp('Templet-Title', 'g'), fileTitle)
-      templateString = templateString.replace(new RegExp('Templet', 'g'), this.getFirstLetterUpper(fileName))
+      templateString = templateString.replace(new RegExp('Templet', 'g'), componentName)
       this.generateFile(preFixPath + suffix, templateString)
     })
   }
@@ -37,9 +38,10 @@ class Router extends Common {
     const templatePath = '/modules/templet.module.ts'
     const fileFullPath = `${filePath}/${fileName}/${fileName}.module.ts`
     let templateString = this.getTemplate(templatePath)
+    const moduleName = fileName.split('-').map(x => this.getFirstLetterUpper(x)).join('')
     templateString = templateString.replace(new RegExp('templet', 'g'), fileName)
     templateString = templateString.replace(new RegExp('Templet-Title', 'g'), fileTitle)
-    templateString = templateString.replace(new RegExp('Templet', 'g'), this.getFirstLetterUpper(fileName))
+    templateString = templateString.replace(new RegExp('Templet', 'g'), moduleName)
     this.generateFile(fileFullPath, templateString)
   }
 
@@ -52,7 +54,7 @@ class Router extends Common {
    * @param {string} isModule 是否是模块
    */
   addRouteConfig(routePath, moduleName, fileName, fileTitle, isModule) {
-    const upperFileName = this.getFirstLetterUpper(fileName)
+    const upperFileName = fileName.split('-').map(x => this.getFirstLetterUpper(x)).join('')
     const modulePath = `${routePath}/${moduleName}.module.ts`
     const filePath = routePath.replace('/src/app', '@app')
     const rewriteList = {

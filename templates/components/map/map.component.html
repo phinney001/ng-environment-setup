@@ -1,0 +1,14 @@
+<div class="map-container">
+  <div *ngIf="options?.geo?.map && (options?.geo?.map !== 150000)" class="map-back" (click)="cityChange.emit()">
+    <i nz-icon nzType="rollback" nzTheme="outline"></i>
+    返回上一级
+  </div>
+  <div
+    class="page-map"
+    [class.has-background]="hasBackground"
+    echarts
+    [options]="options"
+    (chartInit)="chartInit($event)"
+    (chartClick)="chartClick($event)"></div>
+  <ng-content></ng-content>
+</div>
