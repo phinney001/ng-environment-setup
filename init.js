@@ -271,30 +271,15 @@ class AngularCli extends Common {
   /**
    * 创建公共组件动态表单
    */
-  createDynamicFormComponent() {
-    const fileTemplatePath = './templates/components/dynamic-form'
-    const filePath = './src/app/components/dynamic-form'
+  createFormComponent() {
+    const fileTemplatePath = './templates/components/form'
+    const filePath = './src/app/components/form'
     this.copyDir(fileTemplatePath, filePath)
 
-    this.sharedModuleRewriteList.importList.push(`import { DynamicFormComponent } from '@app/components/dynamic-form/dynamic-form.component'`)
+    this.sharedModuleRewriteList.importList.push(`import { FormComponent } from '@app/components/form/form.component'`)
     this.sharedModuleRewriteList.matchList.push({
       match: 'const COMPONENTS = [|]',
-      item: 'DynamicFormComponent'
-    })
-  }
-
-  /**
-   * 创建公共组件电子数字
-   */
-  createDigitalComponent() {
-    const fileTemplatePath = './templates/components/digital'
-    const filePath = './src/app/components/digital'
-    this.copyDir(fileTemplatePath, filePath)
-
-    this.sharedModuleRewriteList.importList.push(`import { DigitalComponent } from '@app/components/digital/digital.component'`)
-    this.sharedModuleRewriteList.matchList.push({
-      match: 'const COMPONENTS = [|]',
-      item: 'DigitalComponent'
+      item: 'FormComponent'
     })
   }
 
@@ -717,8 +702,7 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
     // 公共组件
     this.createTabsComponent()
     this.createTableComponent()
-    this.createDynamicFormComponent()
-    this.createDigitalComponent()
+    this.createFormComponent()
     this.createGaodeMapComponent()
     // this.installBaiduMap()
     // this.createBaiduMapComponent()

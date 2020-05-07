@@ -1,0 +1,430 @@
+<!-- ng-zorro-antd version 9.1.0 -->
+<form
+  class="dynamic-form"
+  nz-form
+  [nzLayout]="layout"
+  [nzNoColon]="config?.noColon || false"
+  [nzAutoTips]="config?.autoTips || {}"
+  [nzDisableAutoTips]="config?.disableAutoTips || false"
+  [formGroup]="form"
+  (ngSubmit)="submit()">
+  <nz-form-item *ngFor="let field of formFields" >
+    <nz-form-label
+      *ngIf="!['button', 'split'].includes(field.type)"
+      [nzFor]="field.name"
+      [ngClass]="[field.labelClass]"
+      [style.width.px]="field.labelWidth"
+      [nzNoColon]="field.noColon || false"
+      [nzRequired]="field.required || false">
+      <span [innerHtml]="field.render ? sanitize.bypassSecurityTrustHtml(field.render(field.label)) : field.label"></span>
+    </nz-form-label>
+    <nz-form-control
+      [ngSwitch]="field.type"
+      [nzValidateStatus]="field.validateStatus"
+      [nzHasFeedback]="field.hasFeedback || false"
+      [nzExtra]="field.extra"
+      [nzSuccessTip]="field.successTip"
+      [nzWarningTip]="field.warningTip"
+      [nzErrorTip]="field.errorTip"
+      [nzValidatingTip]="field.validatingTip"
+      [nzAutoTips]="field.autoTips"
+      [nzDisableAutoTips]="field.disableAutoTips">
+      <!-- 文本框 -->
+      <ng-container *ngSwitchCase="'text'">
+        <input
+          nz-input
+          type="text"
+          [id]="field.name"
+          [nzSize]="field.size"
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [placeholder]="field.placeholder"
+          [readonly]="field.readonly"
+          autocomplete="textInput"
+          [autofocus]="field.autoFocus || false"
+          (ngModelChange)="field.change($event)">
+      </ng-container>
+      <!-- 密码框 -->
+      <ng-container *ngSwitchCase="'password'">
+        <ng-container *ngIf="field.showIcon; else passwordTpl">
+          <nz-input-group [ngClass]="[field.class]" [nzSuffix]="passwordSuffixTpl">
+            <ng-container *ngTemplateOutlet="passwordTpl"></ng-container>
+          </nz-input-group>
+          <ng-template #passwordSuffixTpl>
+            <i nz-icon [nzType]="field.visible ? 'eye-invisible' : 'eye'" (click)="field.visible = !field.visible"></i>
+          </ng-template>
+        </ng-container>
+        <ng-template #passwordTpl>
+          <input
+            nz-input
+            [type]="field.visible ? 'text' : 'password'"
+            [id]="field.name"
+            [nzSize]="field.size"
+            [formControlName]="field.name"
+            [ngClass]="[field.class]"
+            [placeholder]="field.placeholder"
+            [readonly]="field.readonly"
+            autocomplete="passwordInput"
+            [autofocus]="field.autoFocus || false"
+            (ngModelChange)="field.change($event)">
+        </ng-template>
+      </ng-container>
+      <!-- 数字框 -->
+      <ng-container *ngSwitchCase="'number'">
+        <nz-input-number
+          nz-input
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [nzAutoFocus]="field.autoFocus || false"
+          [nzDisabled]="field.disabled || false"
+          [nzMax]="field.max"
+          [nzMin]="field.min"
+          [nzFormatter]="field.formatter"
+          [nzParser]="field.parser"
+          [nzPrecision]="field.precision"
+          [nzPrecisionMode]="field.precisionMode || 'toFixed'"
+          [nzSize]="field.size"
+          [nzStep]="field.step || 1"
+          [nzPlaceHolder]="field.placeholder"
+          [nzId]="field.name"
+          (ngModelChange)="field.change($event)"
+          (nzFocus)="field.focus()"
+          (nzBlur)="field.blur()">
+        </nz-input-number>
+      </ng-container>
+      <!-- 多行输入文本框 -->
+      <ng-container *ngSwitchCase="'textarea'">
+        <textarea
+          nz-input
+          [id]="field.name"
+          [cols]="field.col"
+          [rows]="field.row"
+          [nzSize]="field.size"
+          [nzAutosize]="field.autoSize || false"
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [placeholder]="field.placeholder"
+          [readonly]="field.readonly"
+          [autofocus]="field.autoFocus || false"
+          (ngModelChange)="field.change($event)">
+        </textarea>
+      </ng-container>
+      <!-- 下拉框 -->
+      <ng-container *ngSwitchCase="'select'">
+        <nz-select
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [compareWith]="field.compareWith"
+          [nzAutoClearSearchValue]="field.autoClearSearchValue || true"
+          [nzAllowClear]="field.allowClear || false"
+          [(nzOpen)]="field.open"
+          [nzAutoFocus]="field.autoFocus || false"
+          [nzDisabled]="field.disabled || false"
+          [nzDropdownClassName]="field.dropdownClassName"
+          [nzDropdownMatchSelectWidth]="field.dropdownMatchSelectWidth || true"
+          [nzDropdownStyle]="field.dropdownStyle"
+          [nzCustomTemplate]="field.customTemplate"
+          [nzServerSearch]="field.serverSearch || false"
+          [nzFilterOption]="field.filterOption"
+          [nzMaxMultipleCount]="field.maxMultipleCount"
+          [nzMode]="field.mode || 'default'"
+          [nzNotFoundContent]="field.notFoundContent"
+          [nzPlaceHolder]="field.placeHolder"
+          [nzShowArrow]="field.showArrow || true"
+          [nzShowSearch]="field.showSearch || false"
+          [nzSize]="field.size"
+          [nzSuffixIcon]="field.suffixIcon"
+          [nzRemoveIcon]="field.removeIcon"
+          [nzClearIcon]="field.clearIcon"
+          [nzMenuItemSelectedIcon]="field.menuItemSelectedIcon"
+          [nzTokenSeparators]="field.tokenSeparators || []"
+          [nzLoading]="field.loading || false"
+          [nzMaxTagCount]="field.maxTagCount"
+          [nzMaxTagPlaceholder]="field.maxTagPlaceholder"
+          [nzOptionHeightPx]="field.optionHeightPx || 32"
+          [nzOptionOverflowSize]="field.optionOverflowSize || 8"
+          (ngModelChange)="field.change($event)"
+          (nzOpenChange)="field.openChange($event)"
+          (nzScrollToBottom)="field.scrollToBottom($event)"
+          (nzOnSearch)="field.onSearch($event)"
+          (nzFocus)="field.focus($event)"
+          (nzBlur)="field.blur($event)">
+            <ng-container *ngFor="let op of field.map">
+              <nz-option-group *ngIf="op.group" [nzLabel]="op.group">
+                <nz-option
+                  *ngFor="let o of op.map"
+                  [nzLabel]="o.label"
+                  [nzValue]="o.value"
+                  [nzHide]="o.hide || false"
+                  [nzDisabled]="o.disabled || false"
+                  [nzCustomContent]="o.customContent || false">
+                </nz-option>
+              </nz-option-group>
+              <ng-container *ngIf="!op.group">
+                <nz-option
+                  [nzLabel]="op.label"
+                  [nzValue]="op.value"
+                  [nzHide]="op.hide || false"
+                  [nzDisabled]="op.disabled || false"
+                  [nzCustomContent]="op.customContent || false">
+                </nz-option>
+              </ng-container>
+            </ng-container>
+        </nz-select>
+      </ng-container>
+      <!-- 多级选择框 -->
+      <ng-container *ngSwitchCase="'cascader'">
+        <nz-cascader
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [nzAllowClear]="field.allowClear || true"
+          [nzAutoFocus]="field.autoFocus || false"
+          [nzChangeOn]="field.changeOn"
+          [nzChangeOnSelect]="field.changeOnSelect || false"
+          [nzColumnClassName]="field.columnClassName"
+          [nzDisabled]="field.disabled || false"
+          [nzExpandTrigger]="field.expandTrigger || 'click'"
+          [nzMenuClassName]="field.menuClassName"
+          [nzMenuStyle]="field.menuStyle"
+          [nzNotFoundContent]="field.notFoundContent"
+          [nzLabelProperty]="field.labelProperty || 'label'"
+          [nzLabelRender]="field.labelRender"
+          [nzOptionRender]="field.optionRender"
+          [nzLoadData]="field.loadData"
+          [nzOptions]="field.options"
+          [nzPlaceHolder]="field.placeHolder || '请选择'"
+          [nzShowArrow]="field.showArrow || true"
+          [nzShowInput]="field.showInput || true"
+          [nzShowSearch]="field.showSearch || false"
+          [nzSize]="field.size"
+          [nzValueProperty]="field.valueProperty || 'value'"
+          (ngModelChange)="field.change($event)"
+          (nzVisibleChange)="field.visibleChange($event)"
+          (nzSelectionChange)="field.selectionChange($event)"></nz-cascader>
+      </ng-container>
+      <!-- 单选框 -->
+      <ng-container *ngSwitchCase="'radio'">
+        <nz-radio-group
+          [formControlName]="field.name"
+          [nzName]="field.name"
+          [nzDisabled]="field.disabled"
+          [ngClass]="[field.class || '']"
+          [nzSize]="field.size"
+          [nzButtonStyle]="field.buttonStyle || 'outline'"
+          (ngModelChange)="field.change($event)">
+          <ng-container *ngFor="let ra of field.map" [ngSwitch]="field.type">
+            <label
+              *ngSwitchCase="'button'"
+              nz-radio-button
+              [nzAutoFocus]="ra.autoFocus"
+              [nzDisabled]="ra.disabled"
+              [nzValue]="ra.value"
+              (ngModelChange)="ra.change($event)">{{ra.label}}</label>
+            <label
+              *ngSwitchDefault
+              nz-radio
+              [nzAutoFocus]="ra.autoFocus"
+              [nzDisabled]="ra.disabled"
+              [nzValue]="ra.value"
+              (ngModelChange)="ra.change($event)">{{ra.label}}</label>
+          </ng-container>
+        </nz-radio-group>
+      </ng-container>
+      <!-- 多选框 -->
+      <ng-container *ngSwitchCase="'checkbox'">
+        <nz-checkbox-group
+          [formControlName]="field.name"
+          [ngClass]="[field.class || '']"
+          [nzDisabled]="field.disabled"
+          (ngModelChange)="field.change($event)">
+        </nz-checkbox-group>
+      </ng-container>
+      <!-- 日期选择框-日 -->
+      <ng-container *ngSwitchCase="'date'">
+        <nz-date-picker
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [nzAllowClear]="field.allowClear || true"
+          [nzAutoFocus]="field.autoFocus || false"
+          [nzDateRender]="field.dateRender"
+          [nzDisabled]="field.disabled || false"
+          [nzDisabledDate]="field.disabledDate"
+          [nzLocale]="field.locale"
+          [nzPopupStyle]="field.popupStyle || {}"
+          [nzDropdownClassName]="field.dropdownClassName"
+          [nzSize]="field.size"
+          [nzDefaultPickerValue]="field.defaultPickerValue"
+          [nzSuffixIcon]="field.suffixIcon"
+          (nzOnOpenChange)="field.onOpenChange($event)"
+          (change)="field.change($event)"
+          (nzOnOk)="field.onOk($event)"
+          [nzFormat]="field.format || 'yyyy-MM-dd'"
+          [nzRenderExtraFooter]="field.renderExtraFooter"
+          [nzShowTime]="field.showTime"
+          [nzShowToday]="field.showToday || true"
+          [nzDisabledTime]="field.disabledTime">
+        </nz-date-picker>
+      </ng-container>
+      <!-- 日期选择框-月 -->
+      <ng-container *ngSwitchCase="'month'">
+        <nz-month-picker
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [nzAllowClear]="field.allowClear || true"
+          [nzAutoFocus]="field.autoFocus || false"
+          [nzDateRender]="field.dateRender"
+          [nzDisabled]="field.disabled || false"
+          [nzDisabledDate]="field.disabledDate"
+          [nzLocale]="field.locale"
+          [nzPopupStyle]="field.popupStyle || {}"
+          [nzDropdownClassName]="field.dropdownClassName"
+          [nzSize]="field.size"
+          [nzDefaultPickerValue]="field.defaultPickerValue"
+          [nzSuffixIcon]="field.suffixIcon"
+          (nzOnOpenChange)="field.onOpenChange"
+          (change)="field.change($event)"
+          [nzFormat]="field.format || 'yyyy-MM'"
+          [nzRenderExtraFooter]="field.renderExtraFooter">
+        </nz-month-picker>
+      </ng-container>
+      <!-- 日期选择框-年 -->
+      <ng-container *ngSwitchCase="'year'">
+        <nz-year-picker
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [nzAllowClear]="field.allowClear || true"
+          [nzAutoFocus]="field.autoFocus || false"
+          [nzDateRender]="field.dateRender"
+          [nzDisabled]="field.disabled || false"
+          [nzDisabledDate]="field.disabledDate"
+          [nzLocale]="field.locale"
+          [nzPopupStyle]="field.popupStyle || {}"
+          [nzDropdownClassName]="field.dropdownClassName"
+          [nzSize]="field.size"
+          [nzDefaultPickerValue]="field.defaultPickerValue"
+          [nzSuffixIcon]="field.suffixIcon"
+          (nzOnOpenChange)="field.onOpenChange"
+          (change)="field.change($event)"
+          [nzFormat]="field.format || 'yyyy'"
+          [nzRenderExtraFooter]="field.renderExtraFooter">
+        </nz-year-picker>
+      </ng-container>
+      <!-- 日期选择框-周 -->
+      <ng-container *ngSwitchCase="'week'">
+        <nz-week-picker
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [nzAllowClear]="field.allowClear || true"
+          [nzAutoFocus]="field.autoFocus || false"
+          [nzDateRender]="field.dateRender"
+          [nzDisabled]="field.disabled || false"
+          [nzDisabledDate]="field.disabledDate"
+          [nzLocale]="field.locale"
+          [nzPopupStyle]="field.popupStyle || {}"
+          [nzDropdownClassName]="field.dropdownClassName"
+          [nzSize]="field.size"
+          [nzDefaultPickerValue]="field.defaultPickerValue"
+          [nzSuffixIcon]="field.suffixIcon"
+          (nzOnOpenChange)="field.onOpenChange"
+          (change)="field.change($event)"
+          [nzFormat]="field.format || 'yyyy-ww'"
+          [nzRenderExtraFooter]="field.renderExtraFooter">
+        </nz-week-picker>
+      </ng-container>
+      <!-- 日期选择框-范围 -->
+      <ng-container *ngSwitchCase="'range'">
+        <nz-range-picker
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [nzAllowClear]="field.allowClear || true"
+          [nzAutoFocus]="field.autoFocus || false"
+          [nzDateRender]="field.dateRender"
+          [nzDisabled]="field.disabled || false"
+          [nzDisabledDate]="field.disabledDate"
+          [nzLocale]="field.locale"
+          [nzPopupStyle]="field.popupStyle || {}"
+          [nzDropdownClassName]="field.dropdownClassName"
+          [nzSize]="field.size"
+          [nzDefaultPickerValue]="field.defaultPickerValue"
+          [nzSuffixIcon]="field.suffixIcon"
+          (nzOnOpenChange)="field.onOpenChange"
+          (change)="field.change($event)"
+          [nzFormat]="field.format || 'yyyy-MM-dd'"
+          [nzRenderExtraFooter]="field.renderExtraFooter"
+          [nzShowTime]="field.showTime"
+          [nzRanges]="field.ranges"
+          [nzSeparator]="field.separator || '~'"
+          [nzDisabledTime]="field.disabledTime">
+        </nz-range-picker>
+      </ng-container>
+      <!-- 日期选择框-时间 -->
+      <ng-container *ngSwitchCase="'time'">
+        <nz-time-picker
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [nzAllowEmpty]="field.allowEmpty || true"
+          [nzAutoFocus]="field.autoFocus || false"
+          [nzClearText]="field.clearText || 'clear'"
+          [nzDefaultOpenValue]="field.defaultOpenValue"
+          [nzDisabled]="field.disabled || false"
+          [nzDisabledHours]="field.disabledHours"
+          [nzDisabledMinutes]="field.disabledMinutes"
+          [nzDisabledSeconds]="field.disabledSeconds"
+          [nzFormat]="field.format || 'HH:mm:ss'"
+          [nzHideDisabledOptions]="field.hideDisabledOptions || false"
+          [nzHourStep]="field.hourStep || 1"
+          [nzMinuteStep]="field.minuteStep || 1"
+          [nzSecondStep]="field.secondStep || 1"
+          [nzOpen]="field.open || false"
+          [nzPlaceHolder]="field.placeHolder || '请选择时间'"
+          [nzPopupClassName]="field.popupClassName || ''"
+          [nzUse12Hours]="field.use12Hours || false"
+          [nzSuffixIcon]="field.suffixIcon"
+          (ngModelChange)="field.change($event)"
+          (nzOpenChange)="field.openChange">
+        </nz-time-picker>
+      </ng-container>
+      <!-- 开关 -->
+      <ng-container *ngSwitchCase="'switch'">
+        <nz-switch
+          [formControlName]="field.name"
+          [ngClass]="[field.class]"
+          [nzCheckedChildren]="field.checkedChildren"
+          [nzUnCheckedChildren]="field.unCheckedChildren"
+          [nzDisabled]="field.disabled || false"
+          [nzSize]="field.size"
+          [nzLoading]="field.loading || false"
+          [nzControl]="field.control || false"
+          (ngModelChange)="field.change($event)"></nz-switch>
+      </ng-container>
+      <!-- 按钮 -->
+      <ng-container *ngSwitchCase="'button'">
+        <button
+          nz-button
+          [disabled]="field ? !form.valid : field.disabled"
+          [ngClass]="[field.class || '']"
+          [nzGhost]="field.ghost || false"
+          [nzLoading]="field.loading || false"
+          [nzShape]="field.shape"
+          [nzSize]="field.size"
+          [nzType]="field.btnType"
+          [nzBlock]="field.block || false"
+          [nzDanger]="field.danger || false">{{field.label}}</button>
+      </ng-container>
+      <!-- 分隔符 -->
+      <ng-container *ngIf="field.type === 'split'">
+        <nz-form-split></nz-form-split>
+      </ng-container>
+      <!-- 文本只读 -->
+      <ng-container *ngIf="field.type === 'readonly'">
+        <nz-form-text class="readonly">{{field.map ? getLabelByValue(field.value, field.map) : field.value}}</nz-form-text>
+      </ng-container>
+      <!-- 自定义 -->
+      <ng-container *ngIf="field.type === 'custom'">
+        <input type="hidden" [formControlName]="field.name">
+        <ng-container *ngTemplateOutlet="inputCustomTpl; context: { $implicit: field, form: form }"></ng-container>
+      </ng-container>
+      <span class="form-item-suffix" *ngIf="field.suffix" [innerHtml]="sanitize.bypassSecurityTrustHtml(field.suffix)"></span>
+    </nz-form-control>
+  </nz-form-item>
+</form>

@@ -1,0 +1,41 @@
+/* 表单元素长度样式常量 */
+$form: (
+  lg: 272px,
+  md: 242px,
+  sm: 120px,
+  xs: 80px
+);
+
+/* 动态表单样式 */
+.dynamic-form {
+  .ant-form-item:last-child {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
+  .form-item-suffix {
+    margin-left: 10px;
+  }
+  /* 表单元素长度样式 */
+  input,
+  select,
+  textarea,
+  nz-select,
+  nz-cascader,
+  nz-input-number,
+  nz-input-group,
+  nz-date-picker,
+  nz-month-picker,
+  nz-year-picker,
+  nz-week-picker,
+  nz-range-picker,
+  nz-time-picker {
+    @each $key, $value in $form {
+      &.#{$key}, &.#{$key} .ant-input {
+        width: $value;
+      }
+    }
+    &.adaptive, &.adaptive .ant-input {
+      width: 100%;
+    }
+  }
+}

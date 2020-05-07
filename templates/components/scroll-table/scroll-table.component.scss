@@ -1,0 +1,26 @@
+.scroll-table {
+  .scroll-table-thead {
+    table {
+      width: 100%;
+      th {
+        padding: 5px 16px;
+        background: rgba(16, 197, 255, 0.12);
+        box-sizing: border-box;
+      }
+    }
+  }
+  .scroll-table-body {
+    overflow: hidden;
+    position: relative;
+    min-height: 160px;
+    table {
+      position: absolute;
+      width: 100%;
+      left: 0;
+      top: 0;
+      td {
+        padding: 5px 16px;
+      }
+    }
+  }
+}
