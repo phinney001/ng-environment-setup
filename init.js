@@ -17,13 +17,6 @@ class AngularCli extends Common {
       importList: []
     }
 
-    // webpack扩展改写列表
-    this.webpackExtraRewriteList = {
-      replaceList: [],
-      matchList: [],
-      importList: []
-    }
-
     // 共享模块改写列表
     this.sharedModuleRewriteList = {
       replaceList: [],
@@ -269,6 +262,36 @@ class AngularCli extends Common {
   }
 
   /**
+   * 创建公共组件滚动table
+   */
+  createScrollTableComponent() {
+    const fileTemplatePath = './templates/components/scroll-table'
+    const filePath = './src/app/components/scroll-table'
+    this.copyDir(fileTemplatePath, filePath)
+
+    this.sharedModuleRewriteList.importList.push(`import { ScrollTableComponent } from '@app/components/scroll-table/scroll-table.component'`)
+    this.sharedModuleRewriteList.matchList.push({
+      match: 'const COMPONENTS = [|]',
+      item: 'ScrollTableComponent'
+    })
+  }
+
+  /**
+   * 创建公共组件echarts地图
+   */
+  createMapComponent() {
+    const fileTemplatePath = './templates/components/map'
+    const filePath = './src/app/components/map'
+    this.copyDir(fileTemplatePath, filePath)
+
+    this.sharedModuleRewriteList.importList.push(`import { MapComponent } from '@app/components/map/map.component'`)
+    this.sharedModuleRewriteList.matchList.push({
+      match: 'const COMPONENTS = [|]',
+      item: 'MapComponent'
+    })
+  }
+
+  /**
    * 创建公共组件动态表单
    */
   createFormComponent() {
@@ -404,54 +427,12 @@ class AngularCli extends Common {
   }
 
   /**
-   * 创建webpack扩展文件
-   */
-  createWebpackExtra() {
-    console.log(green('@angular-builders/custom-webpack installing. . .'))
-    this.execCommand('npm install @angular-builders/custom-webpack --save-dev', () => {
-      console.log(green('@angular-builders/custom-webpack installation completed.'))
-      this.generateFile('./webpack.extra.js', this.getTemplate('/config/webpack.extra.js'))
-      this.angularJsonRewriteList.replaceList.push(
-        {
-          before: '@angular-devkit/build-angular:browser',
-          after: '@angular-builders/custom-webpack:browser'
-        },
-        {
-          before: '@angular-devkit/build-angular:dev-server',
-          after: '@angular-builders/custom-webpack:dev-server'
-        }
-      )
-      this.angularJsonRewriteList.matchList.push({
-        match: '"options": {|}',
-        item: `"customWebpackConfig": {
-              "path": "./webpack.extra.js",
-              "mergeStrategies": {
-                "module.rules": "append"
-              },
-              "replaceDuplicatePlugins": true
-            }`,
-        space: 10
-      })
-    })
-  }
-
-  /**
    * 安装echarts模块包
    */
   installEcharts() {
     console.log(green('echarts installing. . .'))
     this.execCommand('npm install echarts ngx-echarts --save', () => {
       console.log(green('echarts installation completed.'))
-      // this.webpackExtraRewriteList.matchList.push({
-      //   match: 'cacheGroups: {|}',
-      //   item: `echarts: {
-      //     name: 'echarts',
-      //     test: /[\\\\/]node_modules[\\\\/]echarts/,
-      //     priority: 20,
-      //     chunks: 'all'
-      //   }`,
-      //   space: 6
-      // })
       this.sharedModuleRewriteList.importList.push(`import { NgxEchartsModule } from 'ngx-echarts'`)
       this.sharedModuleRewriteList.matchList.push({
         match: 'const THIRDMODULES = [|]',
@@ -474,23 +455,6 @@ class AngularCli extends Common {
     console.log(green('ng-zorro-antd installing. . .'))
     this.execCommand('npm install ng-zorro-antd --save', () => {
       console.log(green('ng-zorro-antd installation completed.'))
-      this.webpackExtraRewriteList.matchList.push({
-        match: 'rules: [|]',
-        item: `{
-        test: /\\.less$/,
-        loader: 'less-loader',
-        options: {
-          // 修改主题变量
-          modifyVars: {
-            'primary-color': '#00B09C',
-            'link-color': '#00B09C',
-            'border-radius-base': '4px'
-          },
-          javascriptEnabled: true
-        },
-      }`,
-        space: 6
-      })
       this.sharedModuleRewriteList.importList.push(`import { NgZorroAntdModule } from 'ng-zorro-antd'`)
       this.sharedModuleRewriteList.matchList.push({
         match: 'const THIRDMODULES = [|]',
@@ -591,13 +555,6 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
         all: true
       }
     )
-  }
-
-  /**
-   * 更新webpack扩展文件
-   */
-  updateWebpackExtra() {
-    this.rewriteFile('./webpack.extra.js', this.webpackExtraRewriteList)
   }
 
   /**
@@ -702,6 +659,8 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
     // 公共组件
     this.createTabsComponent()
     this.createTableComponent()
+    this.createScrollTableComponent()
+    this.createMapComponent()
     this.createFormComponent()
     this.createGaodeMapComponent()
     // this.installBaiduMap()
@@ -713,8 +672,6 @@ import { AjaxInterceptor } from '@app/core/ajax.interceptor'`
     this.createSharedModule()
     // 路由模块
     this.createRoutesModule()
-    // webpack扩展配置文件
-    // this.createWebpackExtra()
     // echart及服务
     this.installEcharts()
     this.createChartService()

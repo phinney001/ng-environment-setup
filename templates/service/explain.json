@@ -1,0 +1,11 @@
+{
+  "ajax.interceptor": "请求拦截器",
+  "chart.service": "图表服务",
+  "dict.service": "词典服务",
+  "http.service": "请求服务",
+  "icon.service": "图标服务",
+  "regExp": "正则常量",
+  "router.guard": "路由守卫",
+  "storage.service": "存储服务",
+  "user.service": "用户服务"
+}
