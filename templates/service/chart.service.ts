@@ -214,7 +214,7 @@ export class ChartService {
    */
   getAxisType(data: any[]) {
     if (this.isArray(data) && data.length) {
-      const isValueList = data.every(d => Number(this.isObject(d) ? d.value : d))
+      const isValueList = data.every(d => this.isNumber(this.isObject(d) ? d.value : d))
       return isValueList ? 'value' : 'category'
     }
     return 'category'
@@ -270,10 +270,10 @@ export class ChartService {
             }
             const br = isNoSeriesName ? '' : '<br>'
             const seriesName = isNoSeriesName ? c.name : c.seriesName
-            const value = this.isArray(c.value) ? c.value[1] : c.value
-            t += `${br}${c.marker}${seriesName}: ${value || '-'}`
+            const value = this.isArray(c.value) ? c.value[1] : (this.isObject(c.value) ? c.value.value : c.value)
+            t += `${br}${c.marker}${seriesName}: ${value || (value === 0 ? 0 : '-')}`
             if (c.data && c.data.unit) {
-              t += c.data.unit
+              t += typeof tooltip.unitFormat === 'function' ? tooltip.unitFormat(c.data.unit) : c.data.unit
             }
             if (tooltip && tooltip.extra) {
               t += tooltip.extra
@@ -406,6 +406,14 @@ export class ChartService {
    */
   isArray(data: any): boolean {
     return data instanceof Array
+  }
+
+  /**
+   * 判断是否是数字
+   * @param data 数据
+   */
+  isNumber(data: any): boolean {
+    return !!Number(data) || Number(data) === 0 || data === 0
   }
 
   /**

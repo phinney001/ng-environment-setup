@@ -78,7 +78,16 @@ export class HttpService {
     if (options.isBody) {
       paramsOptions.body = data
     } else {
-      paramsOptions.params = data
+      if (data && typeof data === 'object') {
+        paramsOptions.params = Object.keys(data).reduce((t, c) => {
+          return {
+            ...t,
+            [c]: (data[c] !== 0 && !data[c]) ? '' : data[c]
+          }
+        }, {})
+      } else {
+        paramsOptions.params = data
+      }
     }
 
     // 添加参数options
@@ -94,15 +103,19 @@ export class HttpService {
    * @param params 参数
    */
   public urlBuild(url: string, params?: any): string {
+    let apiurl = environment.apiurl + url
+    if (url.startsWith('http:') || url.startsWith('https:')) {
+      apiurl = url
+    }
     if (params && typeof params === 'object') {
       return Object.keys(params).reduce((a, c, i) => {
         if (i === 0) {
           return `${a}?${c}=${params[c]}`
         }
         return `${a}&${c}=${params[c]}`
-      }, environment.apiurl + url)
+      }, apiurl)
     }
-    return environment.apiurl + url
+    return apiurl
   }
 
   /**
@@ -169,7 +182,8 @@ export class HttpService {
    * @param fileName 文件名称
    */
   download(fileData: any, fileName?: string, fileType?: string) {
-    const file = new Blob([JSON.stringify(fileData)], {
+    const file = fileData instanceof Blob ? fileData
+    : new Blob([fileData], {
       type: fileType || 'application/vnd.ms-excel'
     })
     const objectUrl = URL.createObjectURL(file)
@@ -177,7 +191,7 @@ export class HttpService {
     document.body.appendChild(a)
     a.setAttribute('style', 'display:none')
     a.setAttribute('href', objectUrl)
-    a.setAttribute('download', `${fileName || 'Excel-' + Date.now()}.xls`)
+    a.setAttribute('download', fileName || fileData.name || `${'Excel-' + Date.now()}.xls`)
     a.click()
     document.body.removeChild(a)
     // 释放URL地址

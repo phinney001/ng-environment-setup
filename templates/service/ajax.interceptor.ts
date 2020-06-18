@@ -29,6 +29,8 @@ export class AjaxInterceptor implements HttpInterceptor {
   messageList: any = [];
   // 错误信息定时器
   messageTimer
+  // 退出登录状态
+  logoutRuning = false
 
   // 模态框服务
   get modal(): NzModalService {
@@ -67,13 +69,22 @@ export class AjaxInterceptor implements HttpInterceptor {
    * 退出登录
    */
   logout(): void {
-    this.http.post('/login/logout').subscribe(res => {
-      if (res) {
-        this.storage.clearLocal(['remember'])
-        this.storage.clearSession()
-        this.goTo('/login')
-      }
+    this.logoutRuning = true
+    this.http.get('/logout').subscribe(() => {
+      this.clearAndToLogin()
+    }, () => {
+      this.clearAndToLogin()
     })
+  }
+
+  /**
+   * 清除缓存并跳转登录也
+   */
+  clearAndToLogin() {
+    this.storage.clearLocal(['remember'])
+    this.storage.clearSession()
+    this.goTo('/login')
+    this.logoutRuning = false
   }
 
   /**
@@ -82,6 +93,14 @@ export class AjaxInterceptor implements HttpInterceptor {
    */
   isHttpResponse(event: any): boolean {
     return event instanceof HttpResponse || event instanceof HttpErrorResponse
+  }
+
+  /**
+   * 判断是否是空值
+   * @param data 数据
+   */
+  isNotEmpty(data: any): any {
+    return Boolean(data) || data === 0 || typeof data === 'boolean'
   }
 
   /**
@@ -100,24 +119,35 @@ export class AjaxInterceptor implements HttpInterceptor {
           const interfaceValue = eventClone.body && eventClone.body.value
           switch (interfaceStatus) {
               case '200': // 请求成功
-                  eventClone.body = interfaceValue || true
+                  eventClone.body = !this.isNotEmpty(interfaceValue) || interfaceValue
                   break
               case '2002': // 登录失效
                   this.dealMsg(interfaceValue || '登录已超时，请重新登录！')
                   eventClone.body = false
-                  this.logout()
+                  if (!this.logoutRuning) {
+                    this.logout()
+                  }
                   break
               default: // 请求失败
-                if (event instanceof HttpErrorResponse) {
-                  this.dealMsg(interfaceValue || '操作失败！')
-                  eventClone.body = false
+                if (eventClone.body instanceof Blob) {
+                  const fileName = eventClone.headers.get('Content-Disposition')
+                  if (fileName) {
+                    eventClone.body.name = decodeURI(fileName.split('filename=').pop())
+                  }
+                } else {
+                  if (event instanceof HttpErrorResponse) {
+                    this.dealMsg(interfaceValue || '操作失败！')
+                    eventClone.body = false
+                  }
                 }
                 break
           }
           break
         case 401: // 登录失效
           this.dealMsg(interfaceMsg || '登录已超时，请重新登录！')
-          this.logout()
+          if (!this.logoutRuning) {
+            this.logout()
+          }
           break
         case 404:
           this.dealMsg(interfaceMsg || '请求地址不存在')
