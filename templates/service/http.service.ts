@@ -63,7 +63,7 @@ export class HttpService {
     }
 
     // 请求url
-    if (url.startsWith('http://') || url.startsWith('https://')) {
+    if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
       paramsArray.push(url)
     } else {
       paramsArray.push(environment.apiurl + url)
@@ -104,7 +104,7 @@ export class HttpService {
    */
   public urlBuild(url: string, params?: any): string {
     let apiurl = environment.apiurl + url
-    if (url.startsWith('http:') || url.startsWith('https:')) {
+    if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
       apiurl = url
     }
     if (params && typeof params === 'object') {
